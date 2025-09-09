@@ -81,7 +81,7 @@ $csrf = $_SESSION['csrf'];
             <div>
                 <a class="navbar-brand" id="brandLink" href="index2.php"><?= $H['name'] ?? 'LUMA AIR' ?></a>
 
-                <button type="button" class="btn btn-warning ms-2" id="btnEditLogo">แก้ไข1</button>
+                <button type="button" class="btn btn-warning ms-2" id="btnEditLogo">แก้ไข</button>
             </div>
            
             <div id="logoEditorWrap" class="ms-2 d-none">
