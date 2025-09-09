@@ -19,7 +19,7 @@ p{ color:var(--muted); }
 
 /* ===== Navbar ===== */
 .navbar{ background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.05); position:sticky; top:0; z-index:10; }
-.navbar .container{ display:flex; justify-content:space-between; align-items:center; padding:16px 0; }
+.navbar .container{ display:flex; justify-content:space-between; align-items:center; padding:0; }
 .logo{ font-weight:700; color:var(--primary); font-size:20px; }
 .navbar nav a{ margin-left:20px; color:#333; text-decoration:none; padding:8px 14px; border-radius:10px; }
 .navbar nav a:hover{ background:#eaf6fb; color:var(--primary); }
@@ -28,10 +28,12 @@ p{ color:var(--muted); }
 .btn,.btn-outline,.btn-small,.btn-wide{
   display:inline-block; text-decoration:none; font-weight:600; border-radius:14px; transition:.2s ease;
 }
-.btn{ background:var(--primary); color:#fff; padding:12px 18px; }
+.btn{ background:#1ea0e6; color:#fff; padding:12px 18px; }
 .btn:hover{ background:var(--primary-600); }
+
 .btn-outline{ border:2px solid #1ea0e6; color:#1ea0e6; padding:10px 16px; }
 .btn-outline:hover{ background:rgba(255,255,255,.15); }
+
 .btn-small{ background:#eaf6fb; color:var(--primary); padding:8px 12px; }
 .btn-small:hover{ background:#d6effc; }
 .btn-wide{ display:block; text-align:center; background:var(--primary); color:#fff; padding:12px 14px; border-radius:10px; }
