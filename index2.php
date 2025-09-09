@@ -12,7 +12,7 @@ $F = [];
 $res2 = $conn->query("SELECT * FROM site_footer WHERE id=1");
 if ($row2 = $res2->fetch_assoc()) { $F = $row2; }
 
-// hero title (สำหรับ editorTitle)
+// editorTitle
 $TITLE_HTML = '';
 $resT = $conn->query("SELECT html FROM site_title_home WHERE id=1");
 if ($rowT = $resT->fetch_assoc()) { $TITLE_HTML = $rowT['html']; }
@@ -26,8 +26,12 @@ if ($TITLE_HTML === '') {
 </p>';
 }
 
+// Pic slides
+$P = ['img1'=>'img/pic1.jpg','img2'=>'img/pic2.jpg','img3'=>'img/pic3.jpg'];
+$resP = $conn->query("SELECT img1,img2,img3 FROM site_pic_slides WHERE id=1");
+if ($rowP = $resP->fetch_assoc()) { $P = $rowP; }
 
-// ✅ CSRF
+// CSRF
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
 $csrf = $_SESSION['csrf'];
@@ -83,6 +87,28 @@ $csrf = $_SESSION['csrf'];
     @media (max-width:575px) {
         .navbar {
             padding: 8px 20px;
+        }
+    }
+
+    .hero-img .carousel,
+    .hero-img .carousel-inner,
+    .hero-img .carousel-item {
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .hero-img .carousel-item {
+        aspect-ratio: 4/3;
+    }
+    .hero-img .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 20%;
+    }
+    @media (max-width: 600px) {
+        .hero-img .carousel-item {
+            aspect-ratio: 16 / 11;
         }
     }
     </style>
@@ -145,12 +171,52 @@ $csrf = $_SESSION['csrf'];
             </div>
 
             <div class="hero-img">
-                <img src="img/pic2.jpg" alt="Luma Air App" />
+                <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel"
+                    data-bs-interval="3000" data-bs-pause="false">
+
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
+                            aria-current="true" aria-label="สไลด์ 1"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"
+                            aria-label="สไลด์ 2"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"
+                            aria-label="สไลด์ 3"></button>
+                    </div>
+
+                    <div class="carousel-inner rounded-3 shadow-sm">
+                        <div class="carousel-item active" data-bs-interval="3000">
+                            <img id="slideImg1" src="<?= e($P['img1']) ?>" class="d-block w-100" alt="ภาพที่ 1"
+                                loading="lazy">
+                        </div>
+                        <div class="carousel-item" data-bs-interval="3000">
+                            <img id="slideImg2" src="<?= e($P['img2']) ?>" class="d-block w-100" alt="ภาพที่ 2"
+                                loading="lazy">
+                        </div>
+                        <div class="carousel-item" data-bs-interval="3000">
+                            <img id="slideImg3" src="<?= e($P['img3']) ?>" class="d-block w-100" alt="ภาพที่ 3"
+                                loading="lazy">
+                        </div>
+                    </div>
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel"
+                        data-bs-slide="prev" aria-label="ก่อนหน้า">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel"
+                        data-bs-slide="next" aria-label="ถัดไป">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <br>
+                <div class="text-end">
+                    <button type="button" class="btn btn-warning" id="btnPicSlide">แก้ไขรูปภาพ</button>
+                </div>
             </div>
+
         </div>
     </section>
+
     <div class="container py-4">
-        <textarea id="editorIntro" class="mt-3"></textarea>
         <textarea id="editorBody" class="mt-3"></textarea>
     </div>
 
@@ -231,6 +297,45 @@ $csrf = $_SESSION['csrf'];
         </div>
     </footer>
 
+    <!-- Modal แก้ไขรูปสไลด์ -->
+    <div class="modal fade" id="slideModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form class="modal-content" id="slideForm" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">แก้ไขรูปภาพสไลด์</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label class="form-label">รูปที่ 1</label>
+                            <input class="form-control" type="file" id="img1" name="img1" accept="image/*">
+                            <img id="prev1" class="img-fluid mt-2 rounded border" alt="preview 1">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">รูปที่ 2</label>
+                            <input class="form-control" type="file" id="img2" name="img2" accept="image/*">
+                            <img id="prev2" class="img-fluid mt-2 rounded border" alt="preview 2">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">รูปที่ 3</label>
+                            <input class="form-control" type="file" id="img3" name="img3" accept="image/*">
+                            <img id="prev3" class="img-fluid mt-2 rounded border" alt="preview 3">
+                        </div>
+                    </div>
+
+                    <!-- ส่ง CSRF ไปกับฟอร์ม -->
+                    <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">บันทึก</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
@@ -308,19 +413,16 @@ $csrf = $_SESSION['csrf'];
         });
     });
 
-    // First Title
-    // ===== Title (แก้ไข2) กับ site_title_home =====
+    // EditorTitle
     $(function() {
         let titleInited = false;
 
-        // เริ่มต้นซ่อน
         $('#editorTitle').addClass('d-none');
         $('#titleActions').addClass('d-none');
 
         function showTitleEditor() {
             $('#btnEditTitle').addClass('d-none');
 
-            // init ครั้งแรก
             if (!titleInited) {
                 $('#editorTitle').summernote({
                     height: 300,
@@ -341,11 +443,8 @@ $csrf = $_SESSION['csrf'];
                 titleInited = true;
             }
 
-            // ดึง HTML ที่กำลังโชว์ เข้า editor
             const currentHtml = $('#heroContent').html().trim();
             $('#editorTitle').summernote('code', currentHtml);
-
-            // แสดง editor + ปุ่ม / ซ่อนของจริงชั่วคราว
             $('#heroContent').addClass('d-none');
             $('#editorTitle').removeClass('d-none');
             $('#editorTitle').next('.note-editor').removeClass('d-none');
@@ -368,7 +467,7 @@ $csrf = $_SESSION['csrf'];
             const html = $('#editorTitle').summernote('code');
 
             $.ajax({
-                url: 'save_title_home.php', // ← เปลี่ยนเป็นไฟล์ใหม่
+                url: 'save_title_home.php',
                 method: 'POST',
                 dataType: 'json',
                 data: {
@@ -377,7 +476,7 @@ $csrf = $_SESSION['csrf'];
                 },
                 success: function(resp) {
                     if (resp && resp.ok) {
-                        $('#heroContent').html(resp.html); // อัปเดตที่โชว์จริง
+                        $('#heroContent').html(resp.html);
                         hideTitleEditor();
                     } else {
                         alert(resp.error || 'บันทึกไม่สำเร็จ');
@@ -390,18 +489,78 @@ $csrf = $_SESSION['csrf'];
         });
     });
 
+    // Pic slide
+    const SLIDES = <?= json_encode($P, JSON_UNESCAPED_SLASHES) ?>;
+
+    $(function() {
+        const slideModalEl = document.getElementById('slideModal');
+        if (!slideModalEl) {
+            console.warn('ไม่พบ #slideModal ใน DOM');
+            return;
+        }
+
+        const slideModal = bootstrap.Modal.getOrCreateInstance(slideModalEl);
+
+        $('#btnPicSlide').on('click', function() {
+            $('#prev1').attr('src', SLIDES.img1 || 'img/pic1.jpg');
+            $('#prev2').attr('src', SLIDES.img2 || 'img/pic2.jpg');
+            $('#prev3').attr('src', SLIDES.img3 || 'img/pic3.jpg');
+            $('#img1,#img2,#img3').val('');
+            slideModal.show();
+        });
+
+        function bindPreview(inputSel, imgSel) {
+            $(inputSel).on('change', function() {
+                const f = this.files && this.files[0];
+                if (!f) return;
+                const url = URL.createObjectURL(f);
+                $(imgSel).attr('src', url);
+            });
+        }
+        bindPreview('#img1', '#prev1');
+        bindPreview('#img2', '#prev2');
+        bindPreview('#img3', '#prev3');
+
+        slideModalEl.addEventListener('hidden.bs.modal', () => {
+            $('#slideForm')[0].reset();
+            $('#prev1,#prev2,#prev3').attr('src', '');
+        });
+
+        $('#slideForm').on('submit', function(e) {
+            e.preventDefault();
+            const fd = new FormData(this);
+
+            $.ajax({
+                url: 'save_pic_slides.php',
+                method: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        SLIDES.img1 = resp.img1;
+                        SLIDES.img2 = resp.img2;
+                        SLIDES.img3 = resp.img3;
+
+                        $('#slideImg1').attr('src', SLIDES.img1);
+                        $('#slideImg2').attr('src', SLIDES.img2);
+                        $('#slideImg3').attr('src', SLIDES.img3);
+
+                        slideModal.hide();
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการอัปโหลด');
+                }
+            });
+        });
+    });
 
     //  Examp textEditor
     $(function() {
-
-        $('#editorIntro').summernote({
-            height: 160,
-            toolbar: [
-                ['font', ['bold', 'italic', 'underline', 'clear']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']]
-            ]
-        });
 
         $('#editorBody').summernote({
             height: 300, // ความสูงเริ่มต้น
