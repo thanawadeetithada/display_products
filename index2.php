@@ -12,6 +12,21 @@ $F = [];
 $res2 = $conn->query("SELECT * FROM site_footer WHERE id=1");
 if ($row2 = $res2->fetch_assoc()) { $F = $row2; }
 
+// hero title (สำหรับ editorTitle)
+$TITLE_HTML = '';
+$resT = $conn->query("SELECT html FROM site_title_home WHERE id=1");
+if ($rowT = $resT->fetch_assoc()) { $TITLE_HTML = $rowT['html']; }
+if ($TITLE_HTML === '') {
+  $TITLE_HTML = '<span class="tag">⭐ อากาศบริสุทธิ์ คุณภาพพรีเมียม</span>
+<h2>หายใจ <span class="blue">อากาศบริสุทธิ์</span><br />ทุกลมหายใจ</h2>
+<p>
+  เครื่องแลกเปลี่ยนอากาศ <b>LUMA AIR ERV</b> ด้วยเทคโนโลยีขั้นสูง
+  ดูดอากาศเก่า กรองและแทนที่ด้วยอากาศบริสุทธิ์
+  <span class="blue">ไม่ต้องเปิดหน้าต่าง</span>
+</p>';
+}
+
+
 // ✅ CSRF
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
@@ -67,7 +82,7 @@ $csrf = $_SESSION['csrf'];
 
     @media (max-width:575px) {
         .navbar {
-           padding: 8px 20px;
+            padding: 8px 20px;
         }
     }
     </style>
@@ -75,15 +90,13 @@ $csrf = $_SESSION['csrf'];
 
 <body>
 
-
     <nav class="navbar navbar-expand-lg bg-light border-bottom sticky-top">
         <div class="container">
             <div>
                 <a class="navbar-brand" id="brandLink" href="index2.php"><?= $H['name'] ?? 'LUMA AIR' ?></a>
-
                 <button type="button" class="btn btn-warning ms-2" id="btnEditLogo">แก้ไข</button>
             </div>
-           
+
             <div id="logoEditorWrap" class="ms-2 d-none">
                 <textarea id="editorLogo"></textarea>
 
@@ -112,20 +125,22 @@ $csrf = $_SESSION['csrf'];
     <section class="hero" id="home">
         <div class="container hero-flex">
             <div class="hero-text">
-                <span class="tag">⭐ อากาศบริสุทธิ์ คุณภาพพรีเมียม</span>
-                <h2>หายใจ <span class="blue">อากาศบริสุทธิ์</span><br />ทุกลมหายใจ</h2>
-                <p>
-                    เครื่องแลกเปลี่ยนอากาศ <b>LUMA AIR ERV</b> ด้วยเทคโนโลยีขั้นสูง
-                    ดูดอากาศเก่า กรองและแทนที่ด้วยอากาศบริสุทธิ์
-                    <span class="blue">ไม่ต้องเปิดหน้าต่าง</span>
-                </p>
+                <div id="heroContent">
+                    <?= $TITLE_HTML ?>
+                </div>
+                <div class="text-end">
+                    <button type="button" class="btn btn-warning" id="btnEditTitle">แก้ไข</button>
+                </div>
+
+                <textarea id="editorTitle" class="d-none"></textarea>
+                <div id="titleActions" class="text-end d-none mt-2">
+                    <button type="button" class="btn btn-success" id="btnSaveTitle">บันทึก</button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnCancelTitle">ยกเลิก</button>
+                </div>
+
                 <div class="hero-btns">
                     <a class="btn-bluenext" href="#products">ดูรายละเอียดผลิตภัณฑ์</a>
                     <a class="btn-outline" href="#contact">ปรึกษาฟรี</a>
-                </div>
-                <br>
-                <div class="text-end">
-                    <button type="button" class="btn btn-warning">แก้ไข</button>
                 </div>
             </div>
 
@@ -135,7 +150,6 @@ $csrf = $_SESSION['csrf'];
         </div>
     </section>
     <div class="container py-4">
-        <textarea id="editorTitle"></textarea>
         <textarea id="editorIntro" class="mt-3"></textarea>
         <textarea id="editorBody" class="mt-3"></textarea>
     </div>
@@ -226,6 +240,7 @@ $csrf = $_SESSION['csrf'];
     let BRAND_DB = <?= json_encode($H['name'] ?? 'LUMA AIR') ?>;
     const CSRF = <?= json_encode($csrf) ?>;
 
+    // header
     $(function() {
         let inited = false;
 
@@ -293,22 +308,91 @@ $csrf = $_SESSION['csrf'];
         });
     });
 
+    // First Title
+    // ===== Title (แก้ไข2) กับ site_title_home =====
     $(function() {
+        let titleInited = false;
 
-        $('#editorTitle').summernote({
-            height: 120,
-            toolbar: [
-                ['style', ['style']],
-                ['font', ['bold', 'italic', 'underline', 'clear']],
-                ['fontname', ['fontname']],
-                ['fontsize', ['fontsize']],
-                ['color', ['color']]
-            ],
-            fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman', 'Courier New',
-                'Helvetica'
-            ],
-            fontSizes: ['12', '14', '16', '18', '20', '24', '28', '32']
+        // เริ่มต้นซ่อน
+        $('#editorTitle').addClass('d-none');
+        $('#titleActions').addClass('d-none');
+
+        function showTitleEditor() {
+            $('#btnEditTitle').addClass('d-none');
+
+            // init ครั้งแรก
+            if (!titleInited) {
+                $('#editorTitle').summernote({
+                    height: 300,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']]
+                    ],
+                    fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman',
+                        'Courier New', 'Helvetica'
+                    ],
+                    fontNamesIgnoreCheck: ['Prompt', 'TH Sarabun New'],
+                    fontSizes: ['10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48']
+                });
+                titleInited = true;
+            }
+
+            // ดึง HTML ที่กำลังโชว์ เข้า editor
+            const currentHtml = $('#heroContent').html().trim();
+            $('#editorTitle').summernote('code', currentHtml);
+
+            // แสดง editor + ปุ่ม / ซ่อนของจริงชั่วคราว
+            $('#heroContent').addClass('d-none');
+            $('#editorTitle').removeClass('d-none');
+            $('#editorTitle').next('.note-editor').removeClass('d-none');
+            $('#titleActions').removeClass('d-none');
+            $('#editorTitle').summernote('focus');
+        }
+
+        function hideTitleEditor() {
+            $('#editorTitle').addClass('d-none');
+            $('#editorTitle').next('.note-editor').addClass('d-none');
+            $('#titleActions').addClass('d-none');
+            $('#heroContent').removeClass('d-none');
+            $('#btnEditTitle').removeClass('d-none');
+        }
+
+        $('#btnEditTitle').on('click', showTitleEditor);
+        $('#btnCancelTitle').on('click', hideTitleEditor);
+
+        $('#btnSaveTitle').on('click', function() {
+            const html = $('#editorTitle').summernote('code');
+
+            $.ajax({
+                url: 'save_title_home.php', // ← เปลี่ยนเป็นไฟล์ใหม่
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    csrf: <?= json_encode($csrf) ?>,
+                    html
+                },
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $('#heroContent').html(resp.html); // อัปเดตที่โชว์จริง
+                        hideTitleEditor();
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
         });
+    });
+
+
+    //  Examp textEditor
+    $(function() {
 
         $('#editorIntro').summernote({
             height: 160,
