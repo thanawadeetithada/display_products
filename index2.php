@@ -44,8 +44,9 @@ $csrf = $_SESSION['csrf'];
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LUMA AIR - ERV System</title>
-    <link rel="stylesheet" href="style2.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <?php $cssv = file_exists('style2.css') ? md5_file('style2.css') : time(); ?>
+    <link rel="stylesheet" href="style2.css?v=<?= $cssv ?>">
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
 
     <style>
@@ -100,17 +101,20 @@ $csrf = $_SESSION['csrf'];
     .hero-img .carousel-item {
         aspect-ratio: 4/3;
     }
+
     .hero-img .carousel-item img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         object-position: center 20%;
     }
+
     @media (max-width: 600px) {
         .hero-img .carousel-item {
             aspect-ratio: 16 / 11;
         }
     }
+
     </style>
 </head>
 
@@ -213,6 +217,68 @@ $csrf = $_SESSION['csrf'];
                 </div>
             </div>
 
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="container">
+            <h2 class="feat-title"><span class="blue">LUMA AIR ERV</span></h2>
+            <p class="feat-sub">Energy Recovery Ventilation</p>
+            <p class="feat-desc">
+                ระบบระบายอากาศที่ช่วยแลกเปลี่ยนความร้อนและความชื้นระหว่างอากาศภายในและภายนอกอาคาร
+                พร้อมกรองอากาศให้บริสุทธิ์
+            </p>
+
+            <div class="feature-list">
+                <details class="feature-card red">
+                    <summary>
+                        <span class="i">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 3l10 18H2L12 3z"></path>
+                                <rect x="11" y="9" width="2" height="6" rx="1"></rect>
+                                <rect x="11" y="16.5" width="2" height="2" rx="1"></rect>
+                            </svg>
+                        </span>
+                        <span class="t">วิงเวียนศีรษะ และง่วงนอนขณะทำงาน</span>
+                    </summary>
+                    <div class="content">
+                        อาจเกิดจากระดับ CO2 ที่สูงและคุณภาพอากาศภายในอาคารที่ไม่ดี
+                    </div>
+                </details>
+
+                <details class="feature-card orange">
+                    <summary>
+                        <span class="i">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 3l10 18H2L12 3z"></path>
+                                <rect x="11" y="9" width="2" height="6" rx="1"></rect>
+                                <rect x="11" y="16.5" width="2" height="2" rx="1"></rect>
+                            </svg>
+                        </span>
+                        <span class="t">กลิ่นอับ เชื้อรา และแบคทีเรีย</span>
+                    </summary>
+                    <div class="content">
+                        ในบ้านระบบปิด การระบายอากาศที่จำกัดทำให้ความชื้นสะสมได้ง่าย
+                    </div>
+                </details>
+
+                <details class="feature-card purple">
+                    <summary>
+                        <span class="i">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 3l10 18H2L12 3z"></path>
+                                <rect x="11" y="9" width="2" height="6" rx="1"></rect>
+                                <rect x="11" y="16.5" width="2" height="2" rx="1"></rect>
+                            </svg>
+                        </span>
+                        <span class="t">สารฟอร์มาลดีไฮด์ และ VOCs</span>
+                    </summary>
+                    <div class="content">
+                        เฟอร์นิเจอร์บิวท์อินอาจปล่อยสารระเหยอันตรายที่มองไม่เห็น
+                    </div>
+                </details>
+            </div>
         </div>
     </section>
 
