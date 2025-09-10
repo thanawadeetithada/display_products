@@ -321,3 +321,56 @@ p{ color:var(--muted); }
   .benefit-grid{ grid-template-columns:1fr; }
 }
 /* ===== END Benefit cards ===== */
+
+/* ===== Audiences ===== */
+.audiences{
+  padding:44px 0 64px;
+  background: linear-gradient(180deg, #eaf6fb 0%, #eef9ff 100%);
+  text-align:center;
+}
+.audiences h2{ color:#0c4680; margin-bottom:6px; }
+.aud-sub{ color:#5b6b7e; margin:0 auto 24px; max-width:760px; }
+
+.aud-grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:18px;
+}
+
+.aud-card{
+  background:#ffffff;
+  border:1px solid #e6eef6;
+  border-radius:16px;
+  padding:20px 18px;
+  box-shadow:0 10px 24px rgba(14,30,55,.06);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.aud-card:hover{
+  transform: translateY(-2px);
+  box-shadow:0 14px 28px rgba(14,30,55,.09);
+}
+
+.aud-icon{
+  width:56px; height:56px; margin:0 auto 10px;
+  border-radius:999px;
+  background:#dff1fb;
+  border:1px solid #cfe7f5;
+  display:grid; place-items:center;
+}
+.aud-icon svg{
+  width:26px; height:26px;
+  fill:none; stroke:#1ea0e6; stroke-width:1.8;
+}
+
+.aud-card h3{ margin:6px 0 4px; font-size:18px; color:#0c4680; }
+.aud-card p{ margin:0; color:#5b6b7e; font-size:14.5px; }
+
+/* Responsive */
+@media (max-width: 1024px){
+  .aud-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px){
+  .aud-grid{ grid-template-columns: 1fr; }
+}
+
+/* ===== End Audiences ===== */
