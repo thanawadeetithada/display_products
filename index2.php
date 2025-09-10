@@ -29,7 +29,9 @@ if ($TITLE_HTML === '') {
 // Pic slides
 $P = ['img1'=>'img/pic1.jpg','img2'=>'img/pic2.jpg','img3'=>'img/pic3.jpg'];
 $resP = $conn->query("SELECT img1,img2,img3 FROM site_pic_slides WHERE id=1");
-if ($rowP = $resP->fetch_assoc()) { $P = $rowP; }
+if ($rowP = $resP->fetch_assoc()) {
+  $P = array_merge($P, array_filter($rowP, fn($v) => $v !== null && $v !== ''));
+}
 
 // featTitle
 $FEAT_HTML = '';
@@ -42,6 +44,22 @@ if ($FEAT_HTML === '') {
   ระบบระบายอากาศที่ช่วยแลกเปลี่ยนความร้อนและความชื้นระหว่างอากาศภายในและภายนอกอาคาร
   พร้อมกรองอากาศให้บริสุทธิ์
 </p>';
+}
+
+$FEAT_PARTS = [
+  'feat1_title'   => 'วิงเวียนศีรษะ และง่วงนอนขณะทำงาน',
+  'feat1_content' => 'อาจเกิดจากระดับ CO2 ที่สูงและคุณภาพอากาศภายในอาคารที่ไม่ดี',
+  'feat2_title'   => 'กลิ่นอับ เชื้อรา และแบคทีเรีย',
+  'feat2_content' => 'ในบ้านระบบปิด การระบายอากาศที่จำกัดทำให้ความชื้นสะสมได้ง่าย',
+  'feat3_title'   => 'สารฟอร์มาลดีไฮด์ และ VOCs',
+  'feat3_content' => 'เฟอร์นิเจอร์บิวท์อินอาจปล่อยสารระเหยอันตรายที่มองไม่เห็น',
+];
+
+$resP = $conn->query("SELECT `key`, html FROM site_feat_parts WHERE `key` IN (
+  'feat1_title','feat1_content','feat2_title','feat2_content','feat3_title','feat3_content'
+)");
+while ($row = $resP->fetch_assoc()) {
+  $FEAT_PARTS[$row['key']] = $row['html'];
 }
 
 // CSRF
@@ -250,7 +268,7 @@ $csrf = $_SESSION['csrf'];
             </div>
             <br>
             <div class="feature-list">
-                <details class="feature-card red">
+                <details class="feature-card red" open>
                     <summary>
                         <span class="i">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -259,14 +277,42 @@ $csrf = $_SESSION['csrf'];
                                 <rect x="11" y="16.5" width="2" height="2" rx="1"></rect>
                             </svg>
                         </span>
-                        <span class="t">วิงเวียนศีรษะ และง่วงนอนขณะทำงาน</span>
+                        <span class="t">
+                            <span id="f1TitleText"><?= e(strip_tags($FEAT_PARTS['feat1_title'])) ?></span>
+                            <button type="button" class="btn btn-warning btn-sm"
+                                id="btnEditF1Title">แก้ไขหัวข้อ</button>
+                        </span>
                     </summary>
+
+                    <div id="f1TitleEditorWrap" class="d-none mt-2">
+                        <textarea id="editorF1Title"></textarea>
+                        <div id="f1TitleActions" class="text-end d-none mt-2">
+                            <button type="button" class="btn btn-success" id="btnSaveF1Title">บันทึกหัวข้อ</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                id="btnCancelF1Title">ยกเลิกหัวข้อ</button>
+                        </div>
+                    </div>
+
                     <div class="content">
-                        อาจเกิดจากระดับ CO2 ที่สูงและคุณภาพอากาศภายในอาคารที่ไม่ดี
+                        <span id="f1ContentText"><?= $FEAT_PARTS['feat1_content'] ?></span>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-warning btn-sm"
+                                id="btnEditF1Content">แก้ไขรายละเอียด</button>
+                        </div>
+                    </div>
+
+                    <div id="f1ContentEditorWrap" class="d-none mt-2">
+                        <textarea id="editorF1Content"></textarea>
+                        <div id="f1ContentActions" class="text-end d-none mt-2">
+                            <button type="button" class="btn btn-success"
+                                id="btnSaveF1Content">บันทึกรายละเอียด</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                id="btnCancelF1Content">ยกเลิกรายละเอียด</button>
+                        </div>
                     </div>
                 </details>
 
-                <details class="feature-card orange">
+                <details class="feature-card orange" open>
                     <summary>
                         <span class="i">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -275,14 +321,42 @@ $csrf = $_SESSION['csrf'];
                                 <rect x="11" y="16.5" width="2" height="2" rx="1"></rect>
                             </svg>
                         </span>
-                        <span class="t">กลิ่นอับ เชื้อรา และแบคทีเรีย</span>
+                        <span class="t">
+                            <span id="f2TitleText"><?= e(strip_tags($FEAT_PARTS['feat2_title'])) ?></span>
+                            <button type="button" class="btn btn-warning btn-sm"
+                                id="btnEditF2Title">แก้ไขหัวข้อ</button>
+                        </span>
                     </summary>
+
+                    <div id="f2TitleEditorWrap" class="d-none mt-2">
+                        <textarea id="editorF2Title"></textarea>
+                        <div id="f2TitleActions" class="text-end d-none mt-2">
+                            <button type="button" class="btn btn-success" id="btnSaveF2Title">บันทึกหัวข้อ</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                id="btnCancelF2Title">ยกเลิกหัวข้อ</button>
+                        </div>
+                    </div>
+
                     <div class="content">
-                        ในบ้านระบบปิด การระบายอากาศที่จำกัดทำให้ความชื้นสะสมได้ง่าย
+                        <span id="f2ContentText"><?= $FEAT_PARTS['feat2_content'] ?></span>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-warning btn-sm"
+                                id="btnEditF2Content">แก้ไขรายละเอียด</button>
+                        </div>
+                    </div>
+
+                    <div id="f2ContentEditorWrap" class="d-none mt-2">
+                        <textarea id="editorF2Content"></textarea>
+                        <div id="f2ContentActions" class="text-end d-none mt-2">
+                            <button type="button" class="btn btn-success"
+                                id="btnSaveF2Content">บันทึกรายละเอียด</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                id="btnCancelF2Content">ยกเลิกรายละเอียด</button>
+                        </div>
                     </div>
                 </details>
 
-                <details class="feature-card purple">
+                <details class="feature-card purple" open>
                     <summary>
                         <span class="i">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -291,10 +365,38 @@ $csrf = $_SESSION['csrf'];
                                 <rect x="11" y="16.5" width="2" height="2" rx="1"></rect>
                             </svg>
                         </span>
-                        <span class="t">สารฟอร์มาลดีไฮด์ และ VOCs</span>
+                        <span class="t">
+                            <span id="f3TitleText"><?= e(strip_tags($FEAT_PARTS['feat3_title'])) ?></span>
+                            <button type="button" class="btn btn-warning btn-sm"
+                                id="btnEditF3Title">แก้ไขหัวข้อ</button>
+                        </span>
                     </summary>
+
+                    <div id="f3TitleEditorWrap" class="d-none mt-2">
+                        <textarea id="editorF3Title"></textarea>
+                        <div id="f3TitleActions" class="text-end d-none mt-2">
+                            <button type="button" class="btn btn-success" id="btnSaveF3Title">บันทึกหัวข้อ</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                id="btnCancelF3Title">ยกเลิกหัวข้อ</button>
+                        </div>
+                    </div>
+
                     <div class="content">
-                        เฟอร์นิเจอร์บิวท์อินอาจปล่อยสารระเหยอันตรายที่มองไม่เห็น
+                        <span id="f3ContentText"><?= $FEAT_PARTS['feat3_content'] ?></span>
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-warning btn-sm"
+                                id="btnEditF3Content">แก้ไขรายละเอียด</button>
+                        </div>
+                    </div>
+
+                    <div id="f3ContentEditorWrap" class="d-none mt-2">
+                        <textarea id="editorF3Content"></textarea>
+                        <div id="f3ContentActions" class="text-end d-none mt-2">
+                            <button type="button" class="btn btn-success"
+                                id="btnSaveF3Content">บันทึกรายละเอียด</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                id="btnCancelF3Content">ยกเลิกรายละเอียด</button>
+                        </div>
                     </div>
                 </details>
             </div>
@@ -431,14 +533,16 @@ $csrf = $_SESSION['csrf'];
     const CSRF = <?= json_encode($csrf) ?>;
 
     // header
+    $(document).on('click', '.feature-card summary button', function(e) {
+        e.stopPropagation();
+    });
+
     $(function() {
         let inited = false;
 
         $('#btnEditLogo').on('click', function() {
-            $('#brandLink').addClass('d-none');
-            $('#btnEditLogo').addClass('d-none');
-            $('#logoActions').removeClass('d-none');
-            $('#logoEditorWrap').removeClass('d-none');
+            $('#brandLink, #btnEditLogo').addClass('d-none');
+            $('#logoActions, #logoEditorWrap').removeClass('d-none');
 
             if (!inited) {
                 $('#editorLogo').summernote({
@@ -456,20 +560,19 @@ $csrf = $_SESSION['csrf'];
                 });
                 inited = true;
             }
-            $('#editorLogo').summernote('code', BRAND_DB);
-            $('#editorLogo').summernote('focus');
+            $('#editorLogo').summernote('code', BRAND_DB).summernote('focus');
         });
 
         $('#btnCancelLogo').on('click', function() {
-            $('#logoActions').addClass('d-none');
-            $('#logoEditorWrap').addClass('d-none');
-            $('#btnEditLogo').removeClass('d-none');
-            $('#brandLink').removeClass('d-none');
+            if ($('#editorLogo').next('.note-editor').length) {
+                $('#editorLogo').summernote('code', BRAND_DB);
+            }
+            $('#logoActions, #logoEditorWrap').addClass('d-none');
+            $('#btnEditLogo, #brandLink').removeClass('d-none');
         });
 
         $('#btnSaveLogo').on('click', function() {
             const html = $('#editorLogo').summernote('code');
-
             $.ajax({
                 url: 'save_header.php',
                 method: 'POST',
@@ -481,17 +584,14 @@ $csrf = $_SESSION['csrf'];
                 success: function(resp) {
                     if (resp && resp.ok) {
                         $('#brandLink').html(resp.name);
-                        $('#logoActions').addClass('d-none');
-                        $('#editorLogo').addClass('d-none');
-                        $('#logoEditorWrap').addClass('d-none');
-                        $('#btnEditLogo').removeClass('d-none');
-                        $('#brandLink').removeClass('d-none');
+                        $('#logoActions, #logoEditorWrap').addClass('d-none');
+                        $('#btnEditLogo, #brandLink').removeClass('d-none');
                         BRAND_DB = resp.name;
                     } else {
                         alert(resp.error || 'บันทึกไม่สำเร็จ');
                     }
                 },
-                error: function(xhr) {
+                error: function() {
                     alert('เกิดข้อผิดพลาดในการบันทึก');
                 }
             });
@@ -644,7 +744,6 @@ $csrf = $_SESSION['csrf'];
         });
     });
 
-
     // feattitle
     $(function() {
         let featInited = false;
@@ -730,7 +829,169 @@ $csrf = $_SESSION['csrf'];
         });
     });
 
-    //  Examp textEditor
+    const FEAT_PARTS = <?= json_encode($FEAT_PARTS, JSON_UNESCAPED_UNICODE) ?>;
+    $(function() {
+        function bindPartEditor(cfg) {
+            const {
+                key,
+                $display,
+                $btnEdit,
+                $wrap,
+                $ta,
+                $actions,
+                $btnSave,
+                $btnCancel
+            } = cfg;
+
+            let inited = false;
+
+            $wrap.addClass('d-none');
+            $actions.addClass('d-none');
+
+            function showEditor() {
+                $display.closest('details').attr('open', true);
+                $btnEdit.addClass('d-none');
+                $display.addClass('d-none');
+
+                if (!inited) {
+                    $ta.summernote({
+                        height: 120,
+                        toolbar: [
+                            ['font', ['bold', 'italic', 'underline', 'clear']],
+                            ['fontsize', ['fontsize']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']]
+                        ],
+                        fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman',
+                            'Courier New', 'Helvetica'
+                        ],
+                        fontNamesIgnoreCheck: ['Prompt', 'TH Sarabun New'],
+                        fontSizes: ['12', '14', '16', '18', '20', '24', '28', '32']
+                    });
+                    inited = true;
+                }
+
+                const current = FEAT_PARTS[key] || $display.html().trim();
+                $ta.summernote('code', current);
+
+                $wrap.removeClass('d-none');
+                $actions.removeClass('d-none');
+                $ta.summernote('focus');
+            }
+
+            function hideEditor(clear = false) {
+                if (inited && clear) $ta.summernote('code', '');
+                $wrap.addClass('d-none');
+                $actions.addClass('d-none');
+                $display.removeClass('d-none');
+                $btnEdit.removeClass('d-none');
+            }
+
+            $btnEdit.on('click', showEditor);
+            $btnCancel.on('click', () => hideEditor(true));
+
+            $btnSave.on('click', function() {
+                const html = $ta.summernote('code');
+                $.ajax({
+                    url: 'save_feat_part.php',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        csrf: CSRF,
+                        key,
+                        html
+                    },
+                    success: function(resp) {
+                        if (resp && resp.ok) {
+                            FEAT_PARTS[key] = resp.html;
+
+                            if (/_title$/.test(key)) {
+                                const plain = $('<div>').html(resp.html).text();
+                                $display.text(plain);
+                            } else {
+                                $display.html(resp.html);
+                            }
+
+                            hideEditor(false);
+                        } else {
+                            alert(resp.error || 'บันทึกไม่สำเร็จ');
+                        }
+                    },
+                    error: function() {
+                        alert('เกิดข้อผิดพลาดในการบันทึก');
+                    }
+                });
+            });
+        }
+
+        bindPartEditor({
+            key: 'feat1_title',
+            $display: $('#f1TitleText'),
+            $btnEdit: $('#btnEditF1Title'),
+            $wrap: $('#f1TitleEditorWrap'),
+            $ta: $('#editorF1Title'),
+            $actions: $('#f1TitleActions'),
+            $btnSave: $('#btnSaveF1Title'),
+            $btnCancel: $('#btnCancelF1Title'),
+        });
+        bindPartEditor({
+            key: 'feat1_content',
+            $display: $('#f1ContentText'),
+            $btnEdit: $('#btnEditF1Content'),
+            $wrap: $('#f1ContentEditorWrap'),
+            $ta: $('#editorF1Content'),
+            $actions: $('#f1ContentActions'),
+            $btnSave: $('#btnSaveF1Content'),
+            $btnCancel: $('#btnCancelF1Content'),
+        });
+
+        bindPartEditor({
+            key: 'feat2_title',
+            $display: $('#f2TitleText'),
+            $btnEdit: $('#btnEditF2Title'),
+            $wrap: $('#f2TitleEditorWrap'),
+            $ta: $('#editorF2Title'),
+            $actions: $('#f2TitleActions'),
+            $btnSave: $('#btnSaveF2Title'),
+            $btnCancel: $('#btnCancelF2Title'),
+        });
+        bindPartEditor({
+            key: 'feat2_content',
+            $display: $('#f2ContentText'),
+            $btnEdit: $('#btnEditF2Content'),
+            $wrap: $('#f2ContentEditorWrap'),
+            $ta: $('#editorF2Content'),
+            $actions: $('#f2ContentActions'),
+            $btnSave: $('#btnSaveF2Content'),
+            $btnCancel: $('#btnCancelF2Content'),
+        });
+
+        bindPartEditor({
+            key: 'feat3_title',
+            $display: $('#f3TitleText'),
+            $btnEdit: $('#btnEditF3Title'),
+            $wrap: $('#f3TitleEditorWrap'),
+            $ta: $('#editorF3Title'),
+            $actions: $('#f3TitleActions'),
+            $btnSave: $('#btnSaveF3Title'),
+            $btnCancel: $('#btnCancelF3Title'),
+        });
+
+        bindPartEditor({
+            key: 'feat3_content',
+            $display: $('#f3ContentText'),
+            $btnEdit: $('#btnEditF3Content'),
+            $wrap: $('#f3ContentEditorWrap'),
+            $ta: $('#editorF3Content'),
+            $actions: $('#f3ContentActions'),
+            $btnSave: $('#btnSaveF3Content'),
+            $btnCancel: $('#btnCancelF3Content'),
+        });
+
+    });
+
+
+    // Examp textEditor
     $(function() {
 
         $('#editorBody').summernote({
