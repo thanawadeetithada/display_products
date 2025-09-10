@@ -204,3 +204,62 @@ p{ color:var(--muted); }
 .pc-body p{ margin-bottom:12px; color:var(--muted); }
 
 /* ===== End Products ===== */
+
+/* ===== ERV info section ===== */
+.erv-info{ padding:28px 0 56px; }
+.erv-row{
+  display:grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap:28px;
+  align-items:center;
+  margin-bottom:32px;
+}
+
+.erv-col{ min-width:0; }
+
+.img-frame{ border-radius:16px; overflow:hidden; box-shadow:0 10px 24px rgba(14,30,55,.08); }
+.img-frame img{
+  width:100%; height:100%; display:block;
+  object-fit:cover; object-position:center 28%;
+}
+.img-frame.lg{ aspect-ratio:16/9; }
+.img-frame.sm{ aspect-ratio:16/10; }
+
+.sun-title{ color:#0c4680; margin-bottom:8px; }
+.tech-title{ color:#0c4680; margin-bottom:6px; }
+.erv-col p{ color:#5b6b7e; margin:0 0 10px; }
+
+.checklist{ list-style:none; padding:0; margin:10px 0 0; }
+.checklist li{
+  position:relative; padding-left:28px; margin:8px 0; color:#364a63;
+}
+.checklist li::before{
+  content:""; position:absolute; left:0; top:6px;
+  width:18px; height:18px; border-radius:50%;
+  border:2px solid #19a0d8;
+}
+.checklist li::after{
+  content:""; position:absolute; left:5px; top:10px;
+  width:6px; height:10px; border-right:2px solid #19a0d8; border-bottom:2px solid #19a0d8;
+  transform:rotate(45deg);
+}
+
+.bullet-amber{ list-style:none; padding:0; margin:10px 0 0; }
+.bullet-amber li{
+  position:relative; padding-left:26px; margin:8px 0; color:#364a63;
+}
+.bullet-amber li::before{
+  content:""; position:absolute; left:0; top:4px;
+  width:16px; height:16px; border-radius:50%;
+  background:#fff8e1; border:1px solid #ffd58a; box-shadow:inset 0 0 0 2px #f59e0b;
+}
+
+.img-stack{ display:grid; gap:12px; }
+
+@media (max-width: 980px){
+  .erv-row{ grid-template-columns:1fr; }
+  .erv-row:first-child .erv-col:first-child{ order:-1; }
+  .img-frame.lg{ aspect-ratio:16/10; }
+}
+
+/* ===== End ERV info section ===== */

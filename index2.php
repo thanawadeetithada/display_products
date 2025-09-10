@@ -71,6 +71,18 @@ if ($PROD_HTML === '') {
 <p class="products-sub">เทคโนโลยีขั้นสูงจากแบรนด์ชั้นนำ ผ่านการรับรองคุณภาพมาตรฐานสากล</p>';
 }
 
+// ERV section (4 ส่วน)
+$ERV = [
+  'pic1' => 'img/pic1.jpg',
+  'benefits_html' => '',
+  'tech_html' => '',
+  'pic2' => 'img/pic2.jpg',
+];
+$resERV = $conn->query("SELECT pic1, benefits_html, tech_html, pic2 FROM site_erv WHERE id=1");
+if ($row = $resERV->fetch_assoc()) {
+  $ERV = array_merge($ERV, $row);
+}
+
 // CSRF
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
@@ -471,6 +483,41 @@ $csrf = $_SESSION['csrf'];
         </div>
     </section>
 
+    <!-- ERV info section -->
+    <section class="erv-info" id="erv-info">
+        <div class="container">
+            <div class="erv-row">
+                <div class="erv-col">
+                    <div class="img-frame lg">
+                        <img id="ervPic1" src="<?= e($ERV['pic1']) ?>" alt="Family living room">
+                    </div>
+                </div>
+                <div class="erv-col">
+                    <div id="ervBenefits"><?= $ERV['benefits_html'] ?></div>
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button type="button" class="btn btn-warning" id="btnEditERVPair1">แก้ไขส่วนที่ 1 (รูป+ข้อความ)</button>
+            </div>
+
+            <div class="erv-row second mt-4">
+                <div class="erv-col">
+                    <div id="ervTech"><?= $ERV['tech_html'] ?></div>
+                </div>
+                <div class="erv-col">
+                    <div class="img-stack">
+                        <div class="img-frame sm">
+                            <img id="ervPic2" src="<?= e($ERV['pic2']) ?>" alt="ERV phone UI">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button type="button" class="btn btn-warning" id="btnEditERVPair2">แก้ไขส่วนที่ 2 (รูป+ข้อความ)</button>
+            </div>
+        </div>
+    </section>
+
     <div class="container py-4">
         <textarea id="editorBody" class="mt-3"></textarea>
     </div>
@@ -591,6 +638,73 @@ $csrf = $_SESSION['csrf'];
             </form>
         </div>
     </div>
+
+    <!-- Modal 1 -->
+    <div class="modal fade" id="ervPair1Modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form class="modal-content" id="ervPair1Form" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">แก้ไขส่วนที่ 1 (รูป + ข้อความ)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">รูปที่ 1 (ซ้ายบน)</label>
+                            <input class="form-control" type="file" id="pair1PicInput" name="pic" accept="image/*">
+                            <img id="pair1PicPrev" class="img-fluid mt-2 rounded border" alt="preview pic1">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">ข้อความที่ 1 (Benefits)</label>
+                            <textarea id="pair1Html" name="html"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="which" value="pair1">
+                    <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">บันทึก</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal 2 -->
+    <div class="modal fade" id="ervPair2Modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <form class="modal-content" id="ervPair2Form" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title">แก้ไขส่วนที่ 2 (รูป + ข้อความ)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label">รูปที่ 2 (ขวาล่าง)</label>
+                            <input class="form-control" type="file" id="pair2PicInput" name="pic" accept="image/*">
+                            <img id="pair2PicPrev" class="img-fluid mt-2 rounded border" alt="preview pic2">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">ข้อความที่ 2 (ข้อมูลทางเทคนิค/ติดตั้ง)</label>
+                            <textarea id="pair2Html" name="html"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="which" value="pair2">
+                    <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">บันทึก</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
@@ -1126,6 +1240,127 @@ $csrf = $_SESSION['csrf'];
                     if (resp && resp.ok) {
                         $('#productTitleContent').html(resp.html);
                         hideProdEditor(false);
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
+
+    // ===== Helpers =====
+    function initSummernoteOnce($el, height = 260) {
+        if ($el.data('sn-inited')) return;
+        $el.summernote({
+            height,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['view', ['fullscreen']]
+            ],
+            fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman', 'Courier New',
+                'Helvetica'
+            ],
+            fontNamesIgnoreCheck: ['Prompt', 'TH Sarabun New'],
+            fontSizes: ['10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48']
+        });
+        $el.data('sn-inited', true);
+    }
+
+    function bindPreview(inputSel, imgSel) {
+        $(inputSel).on('change', function() {
+            const f = this.files && this.files[0];
+            if (!f) return;
+            const url = URL.createObjectURL(f);
+            $(imgSel).attr('src', url);
+        });
+    }
+
+    $(function() {
+        const el = document.getElementById('ervPair1Modal');
+        const modal = bootstrap.Modal.getOrCreateInstance(el);
+
+        $('#btnEditERVPair1').on('click', function() {
+            $('#pair1PicPrev').attr('src', $('#ervPic1').attr('src'));
+            $('#pair1PicInput').val('');
+            initSummernoteOnce($('#pair1Html'));
+            $('#pair1Html').summernote('code', $('#ervBenefits').html().trim());
+            modal.show();
+        });
+
+        bindPreview('#pair1PicInput', '#pair1PicPrev');
+
+        el.addEventListener('hidden.bs.modal', () => {
+            $('#ervPair1Form')[0].reset();
+            $('#pair1PicPrev').attr('src', $('#ervPic1').attr('src'));
+        });
+
+        $('#ervPair1Form').on('submit', function(e) {
+            e.preventDefault();
+            const fd = new FormData(this);
+            $.ajax({
+                url: 'save_erv_pair.php',
+                method: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        if (resp.pic) $('#ervPic1').attr('src', resp.pic);
+                        if (resp.html !== undefined) $('#ervBenefits').html(resp.html);
+                        modal.hide();
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
+
+    $(function() {
+        const el = document.getElementById('ervPair2Modal');
+        const modal = bootstrap.Modal.getOrCreateInstance(el);
+
+        $('#btnEditERVPair2').on('click', function() {
+            $('#pair2PicPrev').attr('src', $('#ervPic2').attr('src'));
+            $('#pair2PicInput').val('');
+            initSummernoteOnce($('#pair2Html'));
+            $('#pair2Html').summernote('code', $('#ervTech').html().trim());
+            modal.show();
+        });
+
+        bindPreview('#pair2PicInput', '#pair2PicPrev');
+
+        el.addEventListener('hidden.bs.modal', () => {
+            $('#ervPair2Form')[0].reset();
+            $('#pair2PicPrev').attr('src', $('#ervPic2').attr('src'));
+        });
+
+        $('#ervPair2Form').on('submit', function(e) {
+            e.preventDefault();
+            const fd = new FormData(this);
+            $.ajax({
+                url: 'save_erv_pair.php',
+                method: 'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        if (resp.pic) $('#ervPic2').attr('src', resp.pic);
+                        if (resp.html !== undefined) $('#ervTech').html(resp.html);
+                        modal.hide();
                     } else {
                         alert(resp.error || 'บันทึกไม่สำเร็จ');
                     }
