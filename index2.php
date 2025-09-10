@@ -83,6 +83,18 @@ if ($row = $resERV->fetch_assoc()) {
   $ERV = array_merge($ERV, $row);
 }
 
+// Benefits
+$BENEFITS = [
+  'benefit1' => '<h3>เพิ่ม O2 ลด CO2</h3><p>แลกเปลี่ยนอากาศเก่าให้เป็นอากาศใหม่ที่มีออกซิเจนสูง</p>',
+  'benefit2' => '<h3>กรอง PM2.5</h3><p>กรองฝุ่นละออง PM2.5 และอนุภาคไม่พึงประสงค์ก่อนเข้าห้อง</p>',
+  'benefit3' => '<h3>กำจัดสารฟอร์มาลดีไฮด์</h3><p>กรองสารเคมีจากเฟอร์นิเจอร์และวัสดุก่อสร้างต่างๆ</p>',
+  'benefit4' => '<h3>แลกเปลี่ยนความร้อน</h3><p>รักษาอุณหภูมิห้องให้เหมาะสม ประหยัดพลังงาน</p>',
+];
+$resB = $conn->query("SELECT `key`, html FROM site_benefits WHERE `key` IN ('benefit1','benefit2','benefit3','benefit4')");
+while ($row = $resB->fetch_assoc()) {
+  $BENEFITS[$row['key']] = $row['html'];
+}
+
 // CSRF
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
@@ -431,13 +443,12 @@ $csrf = $_SESSION['csrf'];
                 <?= $PROD_HTML ?>
             </div>
             <div class="text-end mt-4">
-                <button type="button" class="btn btn-warning" id="btnEditProductTitle">แก้ไขProductTitle</button>
+                <button type="button" class="btn btn-warning" id="btnEditProductTitle">แก้ไข</button>
             </div>
             <textarea id="editorProductTitle" class="d-none"></textarea>
             <div id="productTitleActions" class="text-end d-none mt-2">
-                <button type="button" class="btn btn-success" id="btnSaveProductTitle">บันทึกProductTitle</button>
-                <button type="button" class="btn btn-outline-secondary"
-                    id="btnCancelProductTitle">ยกเลิกProductTitle</button>
+                <button type="button" class="btn btn-success" id="btnSaveProductTitle">บันทึก</button>
+                <button type="button" class="btn btn-outline-secondary" id="btnCancelProductTitle">ยกเลิก</button>
             </div>
 
             <div class="product-grid mt-4">
@@ -514,6 +525,92 @@ $csrf = $_SESSION['csrf'];
             </div>
             <div class="text-end mt-3">
                 <button type="button" class="btn btn-warning" id="btnEditERVPair2">แก้ไขส่วนที่ 2 (รูป+ข้อความ)</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefit -->
+    <section class="benefits" id="benefits">
+        <div class="container">
+            <div class="benefit-grid">
+
+                <article class="benefit-card">
+                    <div class="benefit-icon">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                                d="M3 8h10c2 0 2-3 0-3-1.2 0-1.8.6-2 1M3 12h14c2 0 2-3 0-3M3 16h8c2 0 2 3 0 3-1.2 0-1.8-.6-2-1" />
+                        </svg>
+                    </div>
+                    <div id="benefit1Content"><?= $BENEFITS['benefit1'] ?></div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditbenefit1">แก้ไข</button>
+                    </div>
+                    <textarea id="editorbenefit1" class="d-none"></textarea>
+                    <div id="benefit1Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSavebenefit1">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelbenefit1">ยกเลิก</button>
+                    </div>
+                </article>
+
+                <article class="benefit-card">
+                    <div class="benefit-icon green">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" />
+                        </svg>
+                    </div>
+                    <div id="benefit2Content"><?= $BENEFITS['benefit2'] ?></div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditbenefit2">แก้ไข</button>
+                    </div>
+                    <textarea id="editorbenefit2" class="d-none"></textarea>
+                    <div id="benefit2Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSavebenefit2">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelbenefit2">ยกเลิก</button>
+                    </div>
+                </article>
+
+                <article class="benefit-card">
+                    <div class="benefit-icon purple">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M8 12l2.5 2.5L16 9" />
+                        </svg>
+                    </div>
+                    
+                    <div id="benefit3Content"><?= $BENEFITS['benefit3'] ?></div>
+
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditbenefit3">แก้ไข</button>
+                    </div>
+
+                    <textarea id="editorbenefit3" class="d-none"></textarea>
+
+                    <div id="benefit3Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSavebenefit3">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelbenefit3">ยกเลิก</button>
+                    </div>
+                </article>
+
+                <article class="benefit-card">
+                    <div class="benefit-icon amber">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M13 2L3 14h7l-1 8 11-12h-7l1-8z" />
+                        </svg>
+                    </div>
+                    <div id="benefit4Content"><?= $BENEFITS['benefit4'] ?></div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditbenefit4">แก้ไข</button>
+                    </div>
+                    <textarea id="editorbenefit4" class="d-none"></textarea>
+                    <div id="benefit4Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSavebenefit4">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelbenefit4">ยกเลิก</button>
+                    </div>
+                </article>
             </div>
         </div>
     </section>
@@ -1372,6 +1469,145 @@ $csrf = $_SESSION['csrf'];
         });
     });
 
+
+    function initSummernoteOnce($el, h = 180) {
+        if ($el.data('sn-inited')) return;
+        $el.summernote({
+            height: h,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontsize', ['fontsize']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['view', ['fullscreen']]
+            ],
+            fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman', 'Courier New',
+                'Helvetica'
+            ],
+            fontNamesIgnoreCheck: ['Prompt', 'TH Sarabun New'],
+            fontSizes: ['10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48']
+        });
+        $el.data('sn-inited', true);
+    }
+
+    function bindBenefitEditor(opts) {
+        const {
+            key, // 'benefit1'..'benefit4'
+            displaySel, // '#benefit1Content'
+            btnEditSel, // '#btnEditbenefit1'
+            editorSel, // '#editorbenefit1'
+            actionsSel, // '#benefit1Actions'
+            btnSaveSel, // '#btnSavebenefit1'
+            btnCancelSel // '#btnCancelbenefit1'
+        } = opts;
+
+        const $display = $(displaySel);
+        const $btnEdit = $(btnEditSel);
+        const $editor = $(editorSel);
+        const $actions = $(actionsSel);
+        const $btnSave = $(btnSaveSel);
+        const $btnCancel = $(btnCancelSel);
+
+        // 1) เริ่มต้นซ่อน textarea + action (มี d-none อยู่แล้ว เผื่อไว้)
+        $editor.addClass('d-none');
+        $actions.addClass('d-none');
+
+        // 2) กด "แก้ไข" → ซ่อนปุ่ม, ซ่อนเนื้อหาเดิม, เปิด Summernote + เติม HTML เดิมเข้าไป
+        $btnEdit.on('click', function() {
+            $btnEdit.addClass('d-none');
+            $display.addClass('d-none');
+
+            initSummernoteOnce($editor, 180);
+            $editor.summernote('code', $display.html().trim());
+
+            $editor.removeClass('d-none');
+            $editor.next('.note-editor').removeClass('d-none'); // เผื่อบางธีมซ่อน editor wrapper
+            $actions.removeClass('d-none');
+            $editor.summernote('focus');
+        });
+
+        // 6) กด "ยกเลิก" → เคลียร์ค่าใน editor (ยังไม่บันทึก), ปิด editor, โชว์ของเดิม + ปุ่มแก้ไข
+        $btnCancel.on('click', function() {
+            if ($editor.data('sn-inited')) $editor.summernote('code', '');
+            $actions.addClass('d-none');
+            $editor.addClass('d-none');
+            $editor.next('.note-editor').addClass('d-none');
+            $display.removeClass('d-none');
+            $btnEdit.removeClass('d-none');
+        });
+
+        // 5) กด "บันทึก" → ส่งไป DB (save_benefit.php)
+        $btnSave.on('click', function() {
+            const html = $editor.summernote('code');
+            $.ajax({
+                url: 'save_benefit.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    csrf: <?= json_encode($csrf) ?>,
+                    key,
+                    html
+                },
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $display.html(resp.html); // 7) อัปเดตให้ดึงสิ่งที่บันทึกแล้วแสดงทันที
+                        $actions.addClass('d-none');
+                        $editor.addClass('d-none');
+                        $editor.next('.note-editor').addClass('d-none');
+                        $display.removeClass('d-none');
+                        $btnEdit.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    }
+
+    $(function() {
+        bindBenefitEditor({
+            key: 'benefit1',
+            displaySel: '#benefit1Content',
+            btnEditSel: '#btnEditbenefit1',
+            editorSel: '#editorbenefit1',
+            actionsSel: '#benefit1Actions',
+            btnSaveSel: '#btnSavebenefit1',
+            btnCancelSel: '#btnCancelbenefit1'
+        });
+
+        // ถัดไปสำหรับชุดที่ 2–4 (ถ้ามีปุ่มและ element ครบ)
+        bindBenefitEditor({
+            key: 'benefit2',
+            displaySel: '#benefit2Content',
+            btnEditSel: '#btnEditbenefit2',
+            editorSel: '#editorbenefit2',
+            actionsSel: '#benefit2Actions',
+            btnSaveSel: '#btnSavebenefit2',
+            btnCancelSel: '#btnCancelbenefit2'
+        });
+        bindBenefitEditor({
+            key: 'benefit3',
+            displaySel: '#benefit3Content',
+            btnEditSel: '#btnEditbenefit3',
+            editorSel: '#editorbenefit3',
+            actionsSel: '#benefit3Actions',
+            btnSaveSel: '#btnSavebenefit3',
+            btnCancelSel: '#btnCancelbenefit3'
+        });
+        bindBenefitEditor({
+            key: 'benefit4',
+            displaySel: '#benefit4Content',
+            btnEditSel: '#btnEditbenefit4',
+            editorSel: '#editorbenefit4',
+            actionsSel: '#benefit4Actions',
+            btnSaveSel: '#btnSavebenefit4',
+            btnCancelSel: '#btnCancelbenefit4'
+        });
+    });
     // Examp textEditor
     $(function() {
 
