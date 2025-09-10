@@ -62,6 +62,15 @@ while ($row = $resP->fetch_assoc()) {
   $FEAT_PARTS[$row['key']] = $row['html'];
 }
 
+// productTitle
+$PROD_HTML = '';
+$resPT = $conn->query("SELECT html FROM site_product_title WHERE id=1");
+if ($rowPT = $resPT->fetch_assoc()) { $PROD_HTML = $rowPT['html']; }
+if ($PROD_HTML === '') {
+  $PROD_HTML = '<h2>ผลิตภัณฑ์คุณภาพระดับโลก</h2>
+<p class="products-sub">เทคโนโลยีขั้นสูงจากแบรนด์ชั้นนำ ผ่านการรับรองคุณภาพมาตรฐานสากล</p>';
+}
+
 // CSRF
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
@@ -399,6 +408,65 @@ $csrf = $_SESSION['csrf'];
                         </div>
                     </div>
                 </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section class="products" id="products">
+        <div class="container">
+            <div id="productTitleContent">
+                <?= $PROD_HTML ?>
+            </div>
+            <div class="text-end mt-4">
+                <button type="button" class="btn btn-warning" id="btnEditProductTitle">แก้ไขProductTitle</button>
+            </div>
+            <textarea id="editorProductTitle" class="d-none"></textarea>
+            <div id="productTitleActions" class="text-end d-none mt-2">
+                <button type="button" class="btn btn-success" id="btnSaveProductTitle">บันทึกProductTitle</button>
+                <button type="button" class="btn btn-outline-secondary"
+                    id="btnCancelProductTitle">ยกเลิกProductTitle</button>
+            </div>
+
+            <div class="product-grid mt-4">
+                <!-- Card 1 -->
+                <article class="product-card">
+                    <div class="pc-img">
+                        <img src="img/pic2.jpg" alt="LUMA AIR ERV">
+                    </div>
+                    <div class="pc-body">
+                        <h3>LUMA AIR ERV</h3>
+                        <p>ระบบแลกเปลี่ยนอากาศอัจฉริยะ ประหยัดไฟ 40–60%</p>
+                        <a href="#" class="btn-wide">ดูรายละเอียด</a>
+                    </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="product-card">
+                    <div class="pc-img">
+                        <img src="img/pic1.jpg" alt="AIRWOODS ERV System">
+                    </div>
+                    <div class="pc-body">
+                        <h3>AIRWOODS ERV System</h3>
+                        <p>ระบบแลกเปลี่ยนอากาศประสิทธิภาพสูง</p>
+                        <a href="#" class="btn-wide">ดูรายละเอียด</a>
+                    </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="product-card">
+                    <div class="pc-img">
+                        <img src="img/pic2.jpg" alt="Outer Hoods & Grilles">
+                    </div>
+                    <div class="pc-body">
+                        <h3>Outer Hoods & Grilles</h3>
+                        <p>หัวระบายอากาศสำหรับติดตั้งนอกอาคาร</p>
+                        <a href="#" class="btn-wide">ดูรายละเอียด</a>
+                    </div>
+                </article>
+            </div>
+            <div class="text-end mt-4">
+                <button type="button" class="btn btn-warning" id="btnEditProduct">แก้ไข</button>
             </div>
         </div>
     </section>
@@ -990,6 +1058,84 @@ $csrf = $_SESSION['csrf'];
 
     });
 
+    // Product
+    $(function() {
+        let prodInited = false;
+        $('#editorProductTitle').addClass('d-none');
+        $('#productTitleActions').addClass('d-none');
+
+        function showProdEditor() {
+            $('#btnEditProductTitle').addClass('d-none');
+            $('#productTitleContent').addClass('d-none');
+
+            if (!prodInited) {
+                $('#editorProductTitle').summernote({
+                    height: 180,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['view', ['fullscreen']]
+                    ],
+                    fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman',
+                        'Courier New', 'Helvetica'
+                    ],
+                    fontNamesIgnoreCheck: ['Prompt', 'TH Sarabun New'],
+                    fontSizes: ['10', '12', '14', '16', '18', '20', '24', '28', '32', '36']
+                });
+                prodInited = true;
+            }
+
+            const current = $('#productTitleContent').html().trim();
+            $('#editorProductTitle').summernote('code', current);
+            $('#editorProductTitle').removeClass('d-none');
+            $('#editorProductTitle').next('.note-editor').removeClass('d-none');
+            $('#productTitleActions').removeClass('d-none');
+            $('#editorProductTitle').summernote('focus');
+        }
+
+        function hideProdEditor(clear = false) {
+            if (prodInited && clear) {
+                $('#editorProductTitle').summernote('code', '');
+            }
+            $('#editorProductTitle').addClass('d-none');
+            $('#editorProductTitle').next('.note-editor').addClass('d-none');
+            $('#productTitleActions').addClass('d-none');
+            $('#productTitleContent').removeClass('d-none');
+            $('#btnEditProductTitle').removeClass('d-none');
+        }
+
+        $('#btnEditProductTitle').on('click', showProdEditor);
+        $('#btnCancelProductTitle').on('click', function() {
+            hideProdEditor(true);
+        });
+        $('#btnSaveProductTitle').on('click', function() {
+            const html = $('#editorProductTitle').summernote('code');
+            $.ajax({
+                url: 'save_product_title.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    csrf: <?= json_encode($csrf) ?>,
+                    html
+                },
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $('#productTitleContent').html(resp.html);
+                        hideProdEditor(false);
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
 
     // Examp textEditor
     $(function() {
