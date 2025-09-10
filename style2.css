@@ -27,11 +27,10 @@ p{ color:var(--muted); }
 /* ===== End Navbar ===== */
 
 /* ===== Buttons ===== */
-.btn,.btn-outline,.btn-small,.btn-wide{
+.btn-outline,.btn-small,.btn-wide{
   display:inline-block; text-decoration:none; font-weight:600; border-radius:14px; transition:.2s ease;
 }
-.btn{ background:#1ea0e6; color:#fff; padding:12px 18px; }
-.btn:hover{ background:var(--primary-600); }
+
 
 .btn-outline{ border:2px solid #1ea0e6; color:#1ea0e6; padding:10px 16px; }
 .btn-outline:hover{ background:rgba(255,255,255,.15); }

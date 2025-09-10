@@ -31,6 +31,19 @@ $P = ['img1'=>'img/pic1.jpg','img2'=>'img/pic2.jpg','img3'=>'img/pic3.jpg'];
 $resP = $conn->query("SELECT img1,img2,img3 FROM site_pic_slides WHERE id=1");
 if ($rowP = $resP->fetch_assoc()) { $P = $rowP; }
 
+// featTitle
+$FEAT_HTML = '';
+$resF = $conn->query("SELECT html FROM site_feat_title WHERE id=1");
+if ($rowF = $resF->fetch_assoc()) { $FEAT_HTML = $rowF['html']; }
+if ($FEAT_HTML === '') {
+  $FEAT_HTML = '<h2 class="feat-title"><span class="blue">LUMA AIR ERV</span></h2>
+<p class="feat-sub">Energy Recovery Ventilation</p>
+<p class="feat-desc">
+  ระบบระบายอากาศที่ช่วยแลกเปลี่ยนความร้อนและความชื้นระหว่างอากาศภายในและภายนอกอาคาร
+  พร้อมกรองอากาศให้บริสุทธิ์
+</p>';
+}
+
 // CSRF
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
 if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
@@ -114,7 +127,6 @@ $csrf = $_SESSION['csrf'];
             aspect-ratio: 16 / 11;
         }
     }
-
     </style>
 </head>
 
@@ -223,13 +235,20 @@ $csrf = $_SESSION['csrf'];
     <!-- Features -->
     <section class="features">
         <div class="container">
-            <h2 class="feat-title"><span class="blue">LUMA AIR ERV</span></h2>
-            <p class="feat-sub">Energy Recovery Ventilation</p>
-            <p class="feat-desc">
-                ระบบระบายอากาศที่ช่วยแลกเปลี่ยนความร้อนและความชื้นระหว่างอากาศภายในและภายนอกอาคาร
-                พร้อมกรองอากาศให้บริสุทธิ์
-            </p>
+            <div id="featContent">
+                <?= $FEAT_HTML ?>
+            </div>
 
+            <div class="text-end mt-2">
+                <button type="button" class="btn btn-warning" id="btnEditFeatTitle">แก้ไข</button>
+            </div>
+
+            <textarea id="editorFeatTitle" class="d-none"></textarea>
+            <div id="featActions" class="text-end d-none mt-2">
+                <button type="button" class="btn btn-success" id="btnSaveFeatTitle">บันทึก</button>
+                <button type="button" class="btn btn-outline-secondary" id="btnCancelFeatTitle">ยกเลิก</button>
+            </div>
+            <br>
             <div class="feature-list">
                 <details class="feature-card red">
                     <summary>
@@ -620,6 +639,92 @@ $csrf = $_SESSION['csrf'];
                 },
                 error: function() {
                     alert('เกิดข้อผิดพลาดในการอัปโหลด');
+                }
+            });
+        });
+    });
+
+
+    // feattitle
+    $(function() {
+        let featInited = false;
+
+        $('#editorFeatTitle').addClass('d-none');
+        $('#featActions').addClass('d-none');
+
+        function showFeatEditor() {
+            $('#btnEditFeatTitle').addClass('d-none');
+
+            if (!featInited) {
+                $('#editorFeatTitle').summernote({
+                    height: 260,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['view', ['fullscreen']]
+                    ],
+                    fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman',
+                        'Courier New', 'Helvetica'
+                    ],
+                    fontNamesIgnoreCheck: ['Prompt', 'TH Sarabun New'],
+                    fontSizes: ['10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48']
+                });
+                featInited = true;
+            }
+
+            const current = $('#featContent').html().trim();
+            $('#editorFeatTitle').summernote('code', current);
+
+            $('#featContent').addClass('d-none');
+            $('#editorFeatTitle').removeClass('d-none');
+            $('#editorFeatTitle').next('.note-editor').removeClass('d-none');
+            $('#featActions').removeClass('d-none');
+            $('#editorFeatTitle').summernote('focus');
+        }
+
+        function hideFeatEditor(clear = false) {
+            if (featInited) {
+                if (clear) $('#editorFeatTitle').summernote('code', '');
+                $('#editorFeatTitle').blur();
+            }
+            $('#editorFeatTitle').addClass('d-none');
+            $('#editorFeatTitle').next('.note-editor').addClass('d-none');
+            $('#featActions').addClass('d-none');
+            $('#featContent').removeClass('d-none');
+            $('#btnEditFeatTitle').removeClass('d-none');
+        }
+
+        $('#btnEditFeatTitle').on('click', showFeatEditor);
+
+        $('#btnCancelFeatTitle').on('click', function() {
+            hideFeatEditor(true);
+        });
+
+        $('#btnSaveFeatTitle').on('click', function() {
+            const html = $('#editorFeatTitle').summernote('code');
+
+            $.ajax({
+                url: 'save_feat_title.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    csrf: <?= json_encode($csrf) ?>,
+                    html
+                },
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $('#featContent').html(resp.html);
+                        hideFeatEditor(false);
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
                 }
             });
         });
