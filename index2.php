@@ -8,11 +8,6 @@
     $res = $conn->query("SELECT name FROM site_header WHERE id=1");
     if ($row = $res->fetch_assoc()) {$H = $row;}
 
-    // footer
-    $F    = [];
-    $res2 = $conn->query("SELECT * FROM site_footer WHERE id=1");
-    if ($row2 = $res2->fetch_assoc()) {$F = $row2;}
-
     // editorTitle
     $TITLE_HTML = '';
     $resT       = $conn->query("SELECT html FROM site_title_home WHERE id=1");
@@ -127,13 +122,27 @@
 <p>ติดต่อทีมงานเพื่อรับคำปรึกษาและใบเสนอราคาฟรี</p>';
     }
 
-    // footer title (HTML ทั้งบล็อก)
+    // footer title
     $FOOTER_TITLE_HTML = '';
     $resFT = $conn->query("SELECT html FROM site_footer_title WHERE id=1");
     if ($rowFT = $resFT->fetch_assoc()) { $FOOTER_TITLE_HTML = $rowFT['html']; }
     if ($FOOTER_TITLE_HTML === '') {
     $FOOTER_TITLE_HTML = '<h4 class="mb-3">LUMA AIR</h4>
     <p class="mb-0">ผู้เชี่ยวชาญระบบแลกเปลี่ยนอากาศ เพื่อคุณภาพอากาศที่ดีในบ้าน</p>';
+    }
+
+    // footer contact+email
+    $F = [
+    'title'   => 'ติดต่อเรา',
+    'number1' => '02-123-4567',
+    'number2' => '089-123-4567',
+    'email'   => 'info@lumaair.com',
+    ];
+    $resF = $conn->query("SELECT title, number1, number2, email FROM site_footer_contact WHERE id=1");
+    if ($row = $resF->fetch_assoc()) {
+      foreach (['title','number1','number2','email'] as $k) {
+      if (isset($row[$k]) && $row[$k] !== '') $F[$k] = $row[$k];
+      }
     }
 
     // CSRF
@@ -772,33 +781,66 @@
                     <textarea id="editorFooterTitle" class="d-none"></textarea>
                     <div id="FooterTitleActions" class="text-end d-none mt-2 mb-4">
                         <button type="button" class="btn btn-success" id="btnSaveFooterTitle">บันทึก</button>
-                        <button type="button" class="btn btn-secondary"
-                            id="btnCancelFooterTitle">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelFooterTitle">ยกเลิก</button>
                     </div>
                 </div>
 
                 <div class="col-12 col-sm-6 col-lg-2 fcol">
-                    <h4 class="mb-3">ติดต่อเรา</h4>
+                    <h4 class="mb-3" id="footerContactTitle"><?php echo e($F['title']) ?></h4>
+
                     <ul class="f-list">
                         <li>
-                            <span class="ficon" aria-hidden="true">
+                            <span class="ficon" aria-hidden="true" id="iconContact">
                                 <svg viewBox="0 0 24 24">
                                     <path
                                         d="M22 16.9v3a2 2 0 0 1-2.2 2 19.2 19.2 0 0 1-8.4-3.2 18.8 18.8 0 0 1-6-6A19.2 19.2 0 0 1 2.1 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.8.6 2.6a2 2 0 0 1-.5 2L8.5 9a16.5 16.5 0 0 0 6 6l.9-1.6a2 2 0 0 1 2-1c.8.2 1.6.4 2.5.6A2 2 0 0 1 22 16.9z" />
                                 </svg>
                             </span>
-                            <span><?php echo e($F['number1'] ?? '') ?><br><?php echo e($F['number2'] ?? '') ?></span>
+                            <span id="footerPhones">
+                                <?php echo e($F['number1']) ?><br><?php echo e($F['number2']) ?>
+                            </span>
                         </li>
+
                         <li>
-                            <span class="ficon" aria-hidden="true">
+                            <span class="ficon" aria-hidden="true" id="iconEmail">
                                 <svg viewBox="0 0 24 24">
                                     <path
                                         d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm0 0l8 6 8-6" />
                                 </svg>
                             </span>
-                            <span><?php echo e($F['email'] ?? '') ?></span>
+                            <span id="footerEmail"><?php echo e($F['email']) ?></span>
                         </li>
                     </ul>
+
+                    <div class="mt-3 mb-2">
+                        <button type="button" class="btn btn-warning" id="btnEditFooterContact">แก้ไข
+                            </button>
+                    </div>
+                    <form id="footerContactForm" class="d-none">
+                        <div class="mb-2">
+                            <label class="form-label">หัวข้อ</label>
+                            <input type="text" class="form-control" id="fc_title" value="<?php echo e($F['title']) ?>">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">เบอร์ 1</label>
+                            <input type="text" class="form-control" id="fc_number1"
+                                value="<?php echo e($F['number1']) ?>">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">เบอร์ 2</label>
+                            <input type="text" class="form-control" id="fc_number2"
+                                value="<?php echo e($F['number2']) ?>">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">อีเมล</label>
+                            <input type="email" class="form-control" id="fc_email" value="<?php echo e($F['email']) ?>">
+                        </div>
+
+                        <div class="text-end gap-2 d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-success" id="btnSaveFooterContact">บันทึก</button>
+                            <button type="button" class="btn btn-secondary" id="btnCancelFooterContact">ยกเลิก</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="col-12 col-sm-6 col-lg-3 fcol">
@@ -811,7 +853,8 @@
                                     <circle cx="12" cy="10" r="3" />
                                 </svg>
                             </span>
-                            <span><?php echo nl2br(e($F['address'] ?? '')) ?></span>
+                            <span>123 ถนนสุขุมวิท แขวงคลองเคย
+                                เขตคลองเคย กรุงเทพมหานคร 10110</span>
                         </li>
                     </ul>
                 </div>
@@ -826,7 +869,7 @@
                                     <path d="M12 7v5l3 2" />
                                 </svg>
                             </span>
-                            <span><?php echo e($F['work_time'] ?? '') ?><br><?php echo e($F['weekend_time'] ?? '') ?></span>
+                            <span>จันทร์–ศุกร์: 9:00–18:00<br>เสาร์–อาทิตย์: 10:00–16:00</span>
                         </li>
                     </ul>
                 </div>
@@ -2007,6 +2050,70 @@
                         $ta.addClass('d-none').next('.note-editor').addClass('d-none');
                         $content.removeClass('d-none');
                         $btn.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
+
+    //   footer contact
+    $(function() {
+        const $btnEdit = $('#btnEditFooterContact');
+        const $form = $('#footerContactForm');
+        const $btnSave = $('#btnSaveFooterContact');
+        const $btnCancel = $('#btnCancelFooterContact');
+        const $footerContactTitle = $('#footerContactTitle');
+        const $footerPhones = $('#footerPhones');
+        const $footerEmail = $('#footerEmail');
+        const $iconEmail = $('#iconEmail');
+        const $iconContact = $('#iconContact');
+
+        $btnEdit.on('click', () => {
+            $btnEdit.addClass('d-none');
+            $footerContactTitle.addClass('d-none');
+            $footerPhones.addClass('d-none');
+            $footerEmail.addClass('d-none');
+            $iconEmail.addClass('d-none');
+            $iconContact.addClass('d-none');
+            $form.removeClass('d-none');
+
+        });
+
+        $btnCancel.on('click', () => {
+            $form.addClass('d-none');
+            $btnEdit.removeClass('d-none');
+        });
+
+        $btnSave.on('click', function() {
+            const payload = {
+                csrf: <?= json_encode($csrf) ?>,
+                title: $('#fc_title').val().trim(),
+                number1: $('#fc_number1').val().trim(),
+                number2: $('#fc_number2').val().trim(),
+                email: $('#fc_email').val().trim()
+            };
+
+            $.ajax({
+                url: 'save_footer_contact.php',
+                method: 'POST',
+                dataType: 'json',
+                data: payload,
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $('#footerContactTitle').text(resp.title).removeClass('d-none');
+                        $('#footerPhones').html(resp.number1 + (resp.number2 ? '<br>' + resp
+                            .number2 : '')).removeClass('d-none');
+                        $('#footerEmail').text(resp.email).removeClass('d-none');
+
+                        $form.addClass('d-none');
+                        $btnEdit.removeClass('d-none');
+                        $iconContact.removeClass('d-none');
+                        $iconEmail.removeClass('d-none');
                     } else {
                         alert(resp.error || 'บันทึกไม่สำเร็จ');
                     }
