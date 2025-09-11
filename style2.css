@@ -27,13 +27,15 @@ p{ color:var(--muted); }
 /* ===== End Navbar ===== */
 
 /* ===== Buttons ===== */
-.btn-outline,.btn-small,.btn-wide{
+.btn-overwhite,.btn-white,.btn-small,.btn-wide,.btn-bluecurb{
   display:inline-block; text-decoration:none; font-weight:600; border-radius:14px; transition:.2s ease;
 }
 
-
-.btn-outline{ border:2px solid #1ea0e6; color:#1ea0e6; padding:10px 16px; }
-.btn-outline:hover{ background:rgba(255,255,255,.15); }
+.btn-overwhite{ color:var(--primary); background:#fff; padding:12px 18px; }
+.btn-white{ border:2px solid #fff; color:#fff; padding:10px 16px; }
+.btn-white:hover{ background:rgba(255,255,255,.15); }
+.btn-bluecurb{ border:2px solid #1ea0e6; color:#1ea0e6; padding:10px 16px; }
+.btn-bluecurb:hover{ background:rgba(255,255,255,.15); }
 
 .btn-small{ background:#eaf6fb; color:var(--primary); padding:8px 12px; }
 .btn-small:hover{ background:#d6effc; }
@@ -374,3 +376,9 @@ p{ color:var(--muted); }
 }
 
 /* ===== End Audiences ===== */
+
+/* ===== Contact ===== */
+.contact{ padding:60px 0; background:linear-gradient(180deg,#1ea0e6,#167ec0); text-align:center; color:#fff; }
+.contact p{ color:#eaf6ff; margin-bottom:18px; }
+.contact-btns{ display:flex; justify-content:center; gap:14px; }
+/* ===== End Contact ===== */

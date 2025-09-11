@@ -1,126 +1,136 @@
 <?php
-require_once __DIR__ . '/db.php';
-function e($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
+    require_once __DIR__ . '/db.php';
+    function e($s)
+    {return htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');}
 
-// header
-$H = [];
-$res = $conn->query("SELECT name FROM site_header WHERE id=1");
-if ($row = $res->fetch_assoc()) { $H = $row; }
+    // header
+    $H   = [];
+    $res = $conn->query("SELECT name FROM site_header WHERE id=1");
+    if ($row = $res->fetch_assoc()) {$H = $row;}
 
-// footer
-$F = [];
-$res2 = $conn->query("SELECT * FROM site_footer WHERE id=1");
-if ($row2 = $res2->fetch_assoc()) { $F = $row2; }
+    // footer
+    $F    = [];
+    $res2 = $conn->query("SELECT * FROM site_footer WHERE id=1");
+    if ($row2 = $res2->fetch_assoc()) {$F = $row2;}
 
-// editorTitle
-$TITLE_HTML = '';
-$resT = $conn->query("SELECT html FROM site_title_home WHERE id=1");
-if ($rowT = $resT->fetch_assoc()) { $TITLE_HTML = $rowT['html']; }
-if ($TITLE_HTML === '') {
-  $TITLE_HTML = '<span class="tag">⭐ อากาศบริสุทธิ์ คุณภาพพรีเมียม</span>
+    // editorTitle
+    $TITLE_HTML = '';
+    $resT       = $conn->query("SELECT html FROM site_title_home WHERE id=1");
+    if ($rowT = $resT->fetch_assoc()) {$TITLE_HTML = $rowT['html'];}
+    if ($TITLE_HTML === '') {
+        $TITLE_HTML = '<span class="tag">⭐ อากาศบริสุทธิ์ คุณภาพพรีเมียม</span>
 <h2>หายใจ <span class="blue">อากาศบริสุทธิ์</span><br />ทุกลมหายใจ</h2>
 <p>
   เครื่องแลกเปลี่ยนอากาศ <b>LUMA AIR ERV</b> ด้วยเทคโนโลยีขั้นสูง
   ดูดอากาศเก่า กรองและแทนที่ด้วยอากาศบริสุทธิ์
   <span class="blue">ไม่ต้องเปิดหน้าต่าง</span>
 </p>';
-}
+    }
 
-// Pic slides
-$P = ['img1'=>'img/pic1.jpg','img2'=>'img/pic2.jpg','img3'=>'img/pic3.jpg'];
-$resP = $conn->query("SELECT img1,img2,img3 FROM site_pic_slides WHERE id=1");
-if ($rowP = $resP->fetch_assoc()) {
-  $P = array_merge($P, array_filter($rowP, fn($v) => $v !== null && $v !== ''));
-}
+    // Pic slides
+    $P    = ['img1' => 'img/pic1.jpg', 'img2' => 'img/pic2.jpg', 'img3' => 'img/pic3.jpg'];
+    $resP = $conn->query("SELECT img1,img2,img3 FROM site_pic_slides WHERE id=1");
+    if ($rowP = $resP->fetch_assoc()) {
+        $P = array_merge($P, array_filter($rowP, fn($v) => $v !== null && $v !== ''));
+    }
 
-// featTitle
-$FEAT_HTML = '';
-$resF = $conn->query("SELECT html FROM site_feat_title WHERE id=1");
-if ($rowF = $resF->fetch_assoc()) { $FEAT_HTML = $rowF['html']; }
-if ($FEAT_HTML === '') {
-  $FEAT_HTML = '<h2 class="feat-title"><span class="blue">LUMA AIR ERV</span></h2>
+    // featTitle
+    $FEAT_HTML = '';
+    $resF      = $conn->query("SELECT html FROM site_feat_title WHERE id=1");
+    if ($rowF = $resF->fetch_assoc()) {$FEAT_HTML = $rowF['html'];}
+    if ($FEAT_HTML === '') {
+        $FEAT_HTML = '<h2 class="feat-title"><span class="blue">LUMA AIR ERV</span></h2>
 <p class="feat-sub">Energy Recovery Ventilation</p>
 <p class="feat-desc">
   ระบบระบายอากาศที่ช่วยแลกเปลี่ยนความร้อนและความชื้นระหว่างอากาศภายในและภายนอกอาคาร
   พร้อมกรองอากาศให้บริสุทธิ์
 </p>';
-}
+    }
 
-$FEAT_PARTS = [
-  'feat1_title'   => 'วิงเวียนศีรษะ และง่วงนอนขณะทำงาน',
-  'feat1_content' => 'อาจเกิดจากระดับ CO2 ที่สูงและคุณภาพอากาศภายในอาคารที่ไม่ดี',
-  'feat2_title'   => 'กลิ่นอับ เชื้อรา และแบคทีเรีย',
-  'feat2_content' => 'ในบ้านระบบปิด การระบายอากาศที่จำกัดทำให้ความชื้นสะสมได้ง่าย',
-  'feat3_title'   => 'สารฟอร์มาลดีไฮด์ และ VOCs',
-  'feat3_content' => 'เฟอร์นิเจอร์บิวท์อินอาจปล่อยสารระเหยอันตรายที่มองไม่เห็น',
-];
+    $FEAT_PARTS = [
+        'feat1_title'   => 'วิงเวียนศีรษะ และง่วงนอนขณะทำงาน',
+        'feat1_content' => 'อาจเกิดจากระดับ CO2 ที่สูงและคุณภาพอากาศภายในอาคารที่ไม่ดี',
+        'feat2_title'   => 'กลิ่นอับ เชื้อรา และแบคทีเรีย',
+        'feat2_content' => 'ในบ้านระบบปิด การระบายอากาศที่จำกัดทำให้ความชื้นสะสมได้ง่าย',
+        'feat3_title'   => 'สารฟอร์มาลดีไฮด์ และ VOCs',
+        'feat3_content' => 'เฟอร์นิเจอร์บิวท์อินอาจปล่อยสารระเหยอันตรายที่มองไม่เห็น',
+    ];
 
-$resP = $conn->query("SELECT `key`, html FROM site_feat_parts WHERE `key` IN (
+    $resP = $conn->query("SELECT `key`, html FROM site_feat_parts WHERE `key` IN (
   'feat1_title','feat1_content','feat2_title','feat2_content','feat3_title','feat3_content'
 )");
-while ($row = $resP->fetch_assoc()) {
-  $FEAT_PARTS[$row['key']] = $row['html'];
-}
+    while ($row = $resP->fetch_assoc()) {
+        $FEAT_PARTS[$row['key']] = $row['html'];
+    }
 
-// productTitle
-$PROD_HTML = '';
-$resPT = $conn->query("SELECT html FROM site_product_title WHERE id=1");
-if ($rowPT = $resPT->fetch_assoc()) { $PROD_HTML = $rowPT['html']; }
-if ($PROD_HTML === '') {
-  $PROD_HTML = '<h2>ผลิตภัณฑ์คุณภาพระดับโลก</h2>
+    // productTitle
+    $PROD_HTML = '';
+    $resPT     = $conn->query("SELECT html FROM site_product_title WHERE id=1");
+    if ($rowPT = $resPT->fetch_assoc()) {$PROD_HTML = $rowPT['html'];}
+    if ($PROD_HTML === '') {
+        $PROD_HTML = '<h2>ผลิตภัณฑ์คุณภาพระดับโลก</h2>
 <p class="products-sub">เทคโนโลยีขั้นสูงจากแบรนด์ชั้นนำ ผ่านการรับรองคุณภาพมาตรฐานสากล</p>';
-}
+    }
 
-// ERV section (4 ส่วน)
-$ERV = [
-  'pic1' => 'img/pic1.jpg',
-  'benefits_html' => '',
-  'tech_html' => '',
-  'pic2' => 'img/pic2.jpg',
-];
-$resERV = $conn->query("SELECT pic1, benefits_html, tech_html, pic2 FROM site_erv WHERE id=1");
-if ($row = $resERV->fetch_assoc()) {
-  $ERV = array_merge($ERV, $row);
-}
+    // ERV section (4 ส่วน)
+    $ERV = [
+        'pic1'          => 'img/pic1.jpg',
+        'benefits_html' => '',
+        'tech_html'     => '',
+        'pic2'          => 'img/pic2.jpg',
+    ];
+    $resERV = $conn->query("SELECT pic1, benefits_html, tech_html, pic2 FROM site_erv WHERE id=1");
+    if ($row = $resERV->fetch_assoc()) {
+        $ERV = array_merge($ERV, $row);
+    }
 
-// Benefits
-$BENEFITS = [
-  'benefit1' => '<h3>เพิ่ม O2 ลด CO2</h3><p>แลกเปลี่ยนอากาศเก่าให้เป็นอากาศใหม่ที่มีออกซิเจนสูง</p>',
-  'benefit2' => '<h3>กรอง PM2.5</h3><p>กรองฝุ่นละออง PM2.5 และอนุภาคไม่พึงประสงค์ก่อนเข้าห้อง</p>',
-  'benefit3' => '<h3>กำจัดสารฟอร์มาลดีไฮด์</h3><p>กรองสารเคมีจากเฟอร์นิเจอร์และวัสดุก่อสร้างต่างๆ</p>',
-  'benefit4' => '<h3>แลกเปลี่ยนความร้อน</h3><p>รักษาอุณหภูมิห้องให้เหมาะสม ประหยัดพลังงาน</p>',
-];
-$resB = $conn->query("SELECT `key`, html FROM site_benefits WHERE `key` IN ('benefit1','benefit2','benefit3','benefit4')");
-while ($row = $resB->fetch_assoc()) {
-  $BENEFITS[$row['key']] = $row['html'];
-}
+    // Benefits
+    $BENEFITS = [
+        'benefit1' => '<h3>เพิ่ม O2 ลด CO2</h3><p>แลกเปลี่ยนอากาศเก่าให้เป็นอากาศใหม่ที่มีออกซิเจนสูง</p>',
+        'benefit2' => '<h3>กรอง PM2.5</h3><p>กรองฝุ่นละออง PM2.5 และอนุภาคไม่พึงประสงค์ก่อนเข้าห้อง</p>',
+        'benefit3' => '<h3>กำจัดสารฟอร์มาลดีไฮด์</h3><p>กรองสารเคมีจากเฟอร์นิเจอร์และวัสดุก่อสร้างต่างๆ</p>',
+        'benefit4' => '<h3>แลกเปลี่ยนความร้อน</h3><p>รักษาอุณหภูมิห้องให้เหมาะสม ประหยัดพลังงาน</p>',
+    ];
+    $resB = $conn->query("SELECT `key`, html FROM site_benefits WHERE `key` IN ('benefit1','benefit2','benefit3','benefit4')");
+    while ($row = $resB->fetch_assoc()) {
+        $BENEFITS[$row['key']] = $row['html'];
+    }
 
-// Audiences text
-$AUD_HTML = '';
-$resAud = $conn->query("SELECT html FROM site_text_audiences WHERE id=1");
-if ($rowAud = $resAud->fetch_assoc()) { $AUD_HTML = $rowAud['html']; }
-if ($AUD_HTML === '') {
-  $AUD_HTML = '<h2>🏡 เหมาะสำหรับทุกประเภทอาคาร</h2>
+    // Audiences text
+    $AUD_HTML = '';
+    $resAud   = $conn->query("SELECT html FROM site_text_audiences WHERE id=1");
+    if ($rowAud = $resAud->fetch_assoc()) {$AUD_HTML = $rowAud['html'];}
+    if ($AUD_HTML === '') {
+        $AUD_HTML = '<h2>🏡 เหมาะสำหรับทุกประเภทอาคาร</h2>
   <p class="aud-sub">LUMA AIR ERV สามารถติดตั้งได้กับอาคารและที่พักอาศัยทุกประเภท</p>';
-}
+    }
 
-// Audiences 4 ชุด
-$AUD_ITEMS = [
-  'aud1' => '<h3>บ้านเดี่ยว</h3><p>เหมาะสำหรับการติดตั้งในห้องต่างๆ</p>',
-  'aud2' => '<h3>ทาวน์เฮาส์</h3><p>แก้ปัญหาอากาศไม่ถ่ายเทในพื้นที่จำกัด</p>',
-  'aud3' => '<h3>คอนโดมิเนียม</h3><p>เพิ่มคุณภาพอากาศในพื้นที่ขนาดกะทัดรัด</p>',
-  'aud4' => '<h3>อาคารพาณิชย์</h3><p>สร้างสภาพแวดล้อมทำงานที่ดี</p>',
-];
+    // Audiences 4 ชุด
+    $AUD_ITEMS = [
+        'aud1' => '<h3>บ้านเดี่ยว</h3><p>เหมาะสำหรับการติดตั้งในห้องต่างๆ</p>',
+        'aud2' => '<h3>ทาวน์เฮาส์</h3><p>แก้ปัญหาอากาศไม่ถ่ายเทในพื้นที่จำกัด</p>',
+        'aud3' => '<h3>คอนโดมิเนียม</h3><p>เพิ่มคุณภาพอากาศในพื้นที่ขนาดกะทัดรัด</p>',
+        'aud4' => '<h3>อาคารพาณิชย์</h3><p>สร้างสภาพแวดล้อมทำงานที่ดี</p>',
+    ];
 
-$resAud4 = $conn->query("SELECT `key`, html FROM site_audiences WHERE `key` IN ('aud1','aud2','aud3','aud4')");
-while ($row = $resAud4->fetch_assoc()) {
-  $AUD_ITEMS[$row['key']] = $row['html'];
-}
+    $resAud4 = $conn->query("SELECT `key`, html FROM site_audiences WHERE `key` IN ('aud1','aud2','aud3','aud4')");
+    while ($row = $resAud4->fetch_assoc()) {
+        $AUD_ITEMS[$row['key']] = $row['html'];
+    }
 
-// CSRF
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
-$csrf = $_SESSION['csrf'];
+    // contact block
+    $CONTACT_HTML = '';
+    $resC         = $conn->query("SELECT html FROM site_contact WHERE id=1");
+    if ($rowC = $resC->fetch_assoc()) {$CONTACT_HTML = $rowC['html'];}
+    if ($CONTACT_HTML === '') {
+        $CONTACT_HTML = '<h2>สนใจติดตั้งระบบแลกเปลี่ยนอากาศ <br><span>LUMA AIR ERV </span>ในบ้านของคุณไหม?</h2>
+<p>ติดต่อทีมงานเพื่อรับคำปรึกษาและใบเสนอราคาฟรี</p>';
+    }
+
+    // CSRF
+    if (session_status() === PHP_SESSION_NONE) {session_start();}
+    if (empty($_SESSION['csrf'])) {$_SESSION['csrf'] = bin2hex(random_bytes(16));}
+    $csrf = $_SESSION['csrf'];
 ?>
 
 <!DOCTYPE html>
@@ -132,7 +142,7 @@ $csrf = $_SESSION['csrf'];
     <title>LUMA AIR - ERV System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <?php $cssv = file_exists('style2.css') ? md5_file('style2.css') : time(); ?>
-    <link rel="stylesheet" href="style2.css?v=<?= $cssv ?>">
+    <link rel="stylesheet" href="style2.css?v=<?php echo $cssv ?>">
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
 
     <style>
@@ -208,7 +218,7 @@ $csrf = $_SESSION['csrf'];
     <nav class="navbar navbar-expand-lg bg-light border-bottom sticky-top">
         <div class="container">
             <div>
-                <a class="navbar-brand" id="brandLink" href="index2.php"><?= $H['name'] ?? 'LUMA AIR' ?></a>
+                <a class="navbar-brand" id="brandLink" href="index2.php"><?php echo $H['name'] ?? 'LUMA AIR' ?></a>
                 <button type="button" class="btn btn-warning ms-2" id="btnEditLogo">แก้ไข</button>
             </div>
 
@@ -217,7 +227,7 @@ $csrf = $_SESSION['csrf'];
 
                 <div id="logoActions" class="d-none mt-2 d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-success" id="btnSaveLogo">บันทึก</button>
-                    <button type="button" class="btn btn-outline-secondary" id="btnCancelLogo">ยกเลิก</button>
+                    <button type="button" class="btn btn-secondary" id="btnCancelLogo">ยกเลิก</button>
                 </div>
             </div>
 
@@ -241,7 +251,7 @@ $csrf = $_SESSION['csrf'];
         <div class="container hero-flex">
             <div class="hero-text">
                 <div id="heroContent">
-                    <?= $TITLE_HTML ?>
+                    <?php echo $TITLE_HTML ?>
                 </div>
                 <div class="text-end">
                     <button type="button" class="btn btn-warning" id="btnEditTitle">แก้ไข</button>
@@ -250,12 +260,12 @@ $csrf = $_SESSION['csrf'];
                 <textarea id="editorTitle" class="d-none"></textarea>
                 <div id="titleActions" class="text-end d-none mt-2">
                     <button type="button" class="btn btn-success" id="btnSaveTitle">บันทึก</button>
-                    <button type="button" class="btn btn-outline-secondary" id="btnCancelTitle">ยกเลิก</button>
+                    <button type="button" class="btn btn-secondary" id="btnCancelTitle">ยกเลิก</button>
                 </div>
 
                 <div class="hero-btns">
-                    <a class="btn-bluenext" href="#products">ดูรายละเอียดผลิตภัณฑ์</a>
-                    <a class="btn-outline" href="#contact">ปรึกษาฟรี</a>
+                    <a class="btn-bluenext">ดูรายละเอียดผลิตภัณฑ์</a>
+                    <a class="btn-bluecurb">ปรึกษาฟรี</a>
                 </div>
             </div>
 
@@ -274,15 +284,15 @@ $csrf = $_SESSION['csrf'];
 
                     <div class="carousel-inner rounded-3 shadow-sm">
                         <div class="carousel-item active" data-bs-interval="3000">
-                            <img id="slideImg1" src="<?= e($P['img1']) ?>" class="d-block w-100" alt="ภาพที่ 1"
+                            <img id="slideImg1" src="<?php echo e($P['img1']) ?>" class="d-block w-100" alt="ภาพที่ 1"
                                 loading="lazy">
                         </div>
                         <div class="carousel-item" data-bs-interval="3000">
-                            <img id="slideImg2" src="<?= e($P['img2']) ?>" class="d-block w-100" alt="ภาพที่ 2"
+                            <img id="slideImg2" src="<?php echo e($P['img2']) ?>" class="d-block w-100" alt="ภาพที่ 2"
                                 loading="lazy">
                         </div>
                         <div class="carousel-item" data-bs-interval="3000">
-                            <img id="slideImg3" src="<?= e($P['img3']) ?>" class="d-block w-100" alt="ภาพที่ 3"
+                            <img id="slideImg3" src="<?php echo e($P['img3']) ?>" class="d-block w-100" alt="ภาพที่ 3"
                                 loading="lazy">
                         </div>
                     </div>
@@ -309,7 +319,7 @@ $csrf = $_SESSION['csrf'];
     <section class="features">
         <div class="container">
             <div id="featContent">
-                <?= $FEAT_HTML ?>
+                <?php echo $FEAT_HTML ?>
             </div>
 
             <div class="text-end mt-2">
@@ -319,7 +329,7 @@ $csrf = $_SESSION['csrf'];
             <textarea id="editorFeatTitle" class="d-none"></textarea>
             <div id="featActions" class="text-end d-none mt-2">
                 <button type="button" class="btn btn-success" id="btnSaveFeatTitle">บันทึก</button>
-                <button type="button" class="btn btn-outline-secondary" id="btnCancelFeatTitle">ยกเลิก</button>
+                <button type="button" class="btn btn-secondary" id="btnCancelFeatTitle">ยกเลิก</button>
             </div>
             <br>
             <div class="feature-list">
@@ -333,7 +343,7 @@ $csrf = $_SESSION['csrf'];
                             </svg>
                         </span>
                         <span class="t">
-                            <span id="f1TitleText"><?= e(strip_tags($FEAT_PARTS['feat1_title'])) ?></span>
+                            <span id="f1TitleText"><?php echo e(strip_tags($FEAT_PARTS['feat1_title'])) ?></span>
                             <button type="button" class="btn btn-warning btn-sm"
                                 id="btnEditF1Title">แก้ไขหัวข้อ</button>
                         </span>
@@ -343,13 +353,12 @@ $csrf = $_SESSION['csrf'];
                         <textarea id="editorF1Title"></textarea>
                         <div id="f1TitleActions" class="text-end d-none mt-2">
                             <button type="button" class="btn btn-success" id="btnSaveF1Title">บันทึกหัวข้อ</button>
-                            <button type="button" class="btn btn-outline-secondary"
-                                id="btnCancelF1Title">ยกเลิกหัวข้อ</button>
+                            <button type="button" class="btn btn-secondary" id="btnCancelF1Title">ยกเลิกหัวข้อ</button>
                         </div>
                     </div>
 
                     <div class="content">
-                        <span id="f1ContentText"><?= $FEAT_PARTS['feat1_content'] ?></span>
+                        <span id="f1ContentText"><?php echo $FEAT_PARTS['feat1_content'] ?></span>
                         <div class="mt-2">
                             <button type="button" class="btn btn-warning btn-sm"
                                 id="btnEditF1Content">แก้ไขรายละเอียด</button>
@@ -361,7 +370,7 @@ $csrf = $_SESSION['csrf'];
                         <div id="f1ContentActions" class="text-end d-none mt-2">
                             <button type="button" class="btn btn-success"
                                 id="btnSaveF1Content">บันทึกรายละเอียด</button>
-                            <button type="button" class="btn btn-outline-secondary"
+                            <button type="button" class="btn btn-secondary"
                                 id="btnCancelF1Content">ยกเลิกรายละเอียด</button>
                         </div>
                     </div>
@@ -377,7 +386,7 @@ $csrf = $_SESSION['csrf'];
                             </svg>
                         </span>
                         <span class="t">
-                            <span id="f2TitleText"><?= e(strip_tags($FEAT_PARTS['feat2_title'])) ?></span>
+                            <span id="f2TitleText"><?php echo e(strip_tags($FEAT_PARTS['feat2_title'])) ?></span>
                             <button type="button" class="btn btn-warning btn-sm"
                                 id="btnEditF2Title">แก้ไขหัวข้อ</button>
                         </span>
@@ -387,13 +396,12 @@ $csrf = $_SESSION['csrf'];
                         <textarea id="editorF2Title"></textarea>
                         <div id="f2TitleActions" class="text-end d-none mt-2">
                             <button type="button" class="btn btn-success" id="btnSaveF2Title">บันทึกหัวข้อ</button>
-                            <button type="button" class="btn btn-outline-secondary"
-                                id="btnCancelF2Title">ยกเลิกหัวข้อ</button>
+                            <button type="button" class="btn btn-secondary" id="btnCancelF2Title">ยกเลิกหัวข้อ</button>
                         </div>
                     </div>
 
                     <div class="content">
-                        <span id="f2ContentText"><?= $FEAT_PARTS['feat2_content'] ?></span>
+                        <span id="f2ContentText"><?php echo $FEAT_PARTS['feat2_content'] ?></span>
                         <div class="mt-2">
                             <button type="button" class="btn btn-warning btn-sm"
                                 id="btnEditF2Content">แก้ไขรายละเอียด</button>
@@ -405,7 +413,7 @@ $csrf = $_SESSION['csrf'];
                         <div id="f2ContentActions" class="text-end d-none mt-2">
                             <button type="button" class="btn btn-success"
                                 id="btnSaveF2Content">บันทึกรายละเอียด</button>
-                            <button type="button" class="btn btn-outline-secondary"
+                            <button type="button" class="btn btn-secondary"
                                 id="btnCancelF2Content">ยกเลิกรายละเอียด</button>
                         </div>
                     </div>
@@ -421,7 +429,7 @@ $csrf = $_SESSION['csrf'];
                             </svg>
                         </span>
                         <span class="t">
-                            <span id="f3TitleText"><?= e(strip_tags($FEAT_PARTS['feat3_title'])) ?></span>
+                            <span id="f3TitleText"><?php echo e(strip_tags($FEAT_PARTS['feat3_title'])) ?></span>
                             <button type="button" class="btn btn-warning btn-sm"
                                 id="btnEditF3Title">แก้ไขหัวข้อ</button>
                         </span>
@@ -431,13 +439,12 @@ $csrf = $_SESSION['csrf'];
                         <textarea id="editorF3Title"></textarea>
                         <div id="f3TitleActions" class="text-end d-none mt-2">
                             <button type="button" class="btn btn-success" id="btnSaveF3Title">บันทึกหัวข้อ</button>
-                            <button type="button" class="btn btn-outline-secondary"
-                                id="btnCancelF3Title">ยกเลิกหัวข้อ</button>
+                            <button type="button" class="btn btn-secondary" id="btnCancelF3Title">ยกเลิกหัวข้อ</button>
                         </div>
                     </div>
 
                     <div class="content">
-                        <span id="f3ContentText"><?= $FEAT_PARTS['feat3_content'] ?></span>
+                        <span id="f3ContentText"><?php echo $FEAT_PARTS['feat3_content'] ?></span>
                         <div class="mt-2">
                             <button type="button" class="btn btn-warning btn-sm"
                                 id="btnEditF3Content">แก้ไขรายละเอียด</button>
@@ -449,7 +456,7 @@ $csrf = $_SESSION['csrf'];
                         <div id="f3ContentActions" class="text-end d-none mt-2">
                             <button type="button" class="btn btn-success"
                                 id="btnSaveF3Content">บันทึกรายละเอียด</button>
-                            <button type="button" class="btn btn-outline-secondary"
+                            <button type="button" class="btn btn-secondary"
                                 id="btnCancelF3Content">ยกเลิกรายละเอียด</button>
                         </div>
                     </div>
@@ -462,7 +469,7 @@ $csrf = $_SESSION['csrf'];
     <section class="products" id="products">
         <div class="container">
             <div id="productTitleContent">
-                <?= $PROD_HTML ?>
+                <?php echo $PROD_HTML ?>
             </div>
             <div class="text-end mt-4">
                 <button type="button" class="btn btn-warning" id="btnEditProductTitle">แก้ไข</button>
@@ -470,7 +477,7 @@ $csrf = $_SESSION['csrf'];
             <textarea id="editorProductTitle" class="d-none"></textarea>
             <div id="productTitleActions" class="text-end d-none mt-2">
                 <button type="button" class="btn btn-success" id="btnSaveProductTitle">บันทึก</button>
-                <button type="button" class="btn btn-outline-secondary" id="btnCancelProductTitle">ยกเลิก</button>
+                <button type="button" class="btn btn-secondary" id="btnCancelProductTitle">ยกเลิก</button>
             </div>
 
             <div class="product-grid mt-4">
@@ -522,11 +529,11 @@ $csrf = $_SESSION['csrf'];
             <div class="erv-row">
                 <div class="erv-col">
                     <div class="img-frame lg">
-                        <img id="ervPic1" src="<?= e($ERV['pic1']) ?>" alt="Family living room">
+                        <img id="ervPic1" src="<?php echo e($ERV['pic1']) ?>" alt="Family living room">
                     </div>
                 </div>
                 <div class="erv-col">
-                    <div id="ervBenefits"><?= $ERV['benefits_html'] ?></div>
+                    <div id="ervBenefits"><?php echo $ERV['benefits_html'] ?></div>
                 </div>
             </div>
             <div class="text-end mt-3">
@@ -535,12 +542,12 @@ $csrf = $_SESSION['csrf'];
 
             <div class="erv-row second mt-4">
                 <div class="erv-col">
-                    <div id="ervTech"><?= $ERV['tech_html'] ?></div>
+                    <div id="ervTech"><?php echo $ERV['tech_html'] ?></div>
                 </div>
                 <div class="erv-col">
                     <div class="img-stack">
                         <div class="img-frame sm">
-                            <img id="ervPic2" src="<?= e($ERV['pic2']) ?>" alt="ERV phone UI">
+                            <img id="ervPic2" src="<?php echo e($ERV['pic2']) ?>" alt="ERV phone UI">
                         </div>
                     </div>
                 </div>
@@ -563,14 +570,14 @@ $csrf = $_SESSION['csrf'];
                                 d="M3 8h10c2 0 2-3 0-3-1.2 0-1.8.6-2 1M3 12h14c2 0 2-3 0-3M3 16h8c2 0 2 3 0 3-1.2 0-1.8-.6-2-1" />
                         </svg>
                     </div>
-                    <div id="benefit1Content"><?= $BENEFITS['benefit1'] ?></div>
+                    <div id="benefit1Content"><?php echo $BENEFITS['benefit1'] ?></div>
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditbenefit1">แก้ไข</button>
                     </div>
                     <textarea id="editorbenefit1" class="d-none"></textarea>
                     <div id="benefit1Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSavebenefit1">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary" id="btnCancelbenefit1">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelbenefit1">ยกเลิก</button>
                     </div>
                 </article>
 
@@ -580,14 +587,14 @@ $csrf = $_SESSION['csrf'];
                             <path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" />
                         </svg>
                     </div>
-                    <div id="benefit2Content"><?= $BENEFITS['benefit2'] ?></div>
+                    <div id="benefit2Content"><?php echo $BENEFITS['benefit2'] ?></div>
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditbenefit2">แก้ไข</button>
                     </div>
                     <textarea id="editorbenefit2" class="d-none"></textarea>
                     <div id="benefit2Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSavebenefit2">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary" id="btnCancelbenefit2">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelbenefit2">ยกเลิก</button>
                     </div>
                 </article>
 
@@ -598,7 +605,7 @@ $csrf = $_SESSION['csrf'];
                             <path d="M8 12l2.5 2.5L16 9" />
                         </svg>
                     </div>
-                    <div id="benefit3Content"><?= $BENEFITS['benefit3'] ?></div>
+                    <div id="benefit3Content"><?php echo $BENEFITS['benefit3'] ?></div>
 
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditbenefit3">แก้ไข</button>
@@ -608,7 +615,7 @@ $csrf = $_SESSION['csrf'];
 
                     <div id="benefit3Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSavebenefit3">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary" id="btnCancelbenefit3">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelbenefit3">ยกเลิก</button>
                     </div>
                 </article>
 
@@ -618,14 +625,14 @@ $csrf = $_SESSION['csrf'];
                             <path d="M13 2L3 14h7l-1 8 11-12h-7l1-8z" />
                         </svg>
                     </div>
-                    <div id="benefit4Content"><?= $BENEFITS['benefit4'] ?></div>
+                    <div id="benefit4Content"><?php echo $BENEFITS['benefit4'] ?></div>
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditbenefit4">แก้ไข</button>
                     </div>
                     <textarea id="editorbenefit4" class="d-none"></textarea>
                     <div id="benefit4Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSavebenefit4">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary" id="btnCancelbenefit4">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelbenefit4">ยกเลิก</button>
                     </div>
                 </article>
             </div>
@@ -635,14 +642,14 @@ $csrf = $_SESSION['csrf'];
     <!-- Suitable-->
     <section class="audiences" id="audiences">
         <div class="container">
-            <div id="audiencesContent"><?= $AUD_HTML ?></div>
+            <div id="audiencesContent"><?php echo $AUD_HTML ?></div>
             <div class="text-end mt-3 mb-3">
                 <button type="button" class="btn btn-warning mb-4" id="btnEditTextAudiences">แก้ไข</button>
             </div>
             <textarea id="editorTextAudiences" class="d-none"></textarea>
             <div id="TextAudiencesActions" class="text-end d-none mt-2 mb-4">
                 <button type="button" class="btn btn-success" id="btnSaveTextAudiences">บันทึก</button>
-                <button type="button" class="btn btn-outline-secondary" id="btnCancelTextAudiences">ยกเลิก</button>
+                <button type="button" class="btn btn-secondary" id="btnCancelTextAudiences">ยกเลิก</button>
             </div>
 
             <div class="aud-grid">
@@ -653,15 +660,14 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <div id="aud1Content"><?= $AUD_ITEMS['aud1'] ?></div>
+                    <div id="aud1Content"><?php echo $AUD_ITEMS['aud1'] ?></div>
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditAudiences1">แก้ไข</button>
                     </div>
                     <textarea id="editorAudiences1" class="d-none"></textarea>
                     <div id="Audiences1Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSaveAudiences1">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary"
-                            id="btnCancelAudiences1">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelAudiences1">ยกเลิก</button>
                     </div>
                 </article>
 
@@ -672,7 +678,7 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <div id="aud2Content"><?= $AUD_ITEMS['aud2'] ?></div>
+                    <div id="aud2Content"><?php echo $AUD_ITEMS['aud2'] ?></div>
 
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditAudiences2">แก้ไข</button>
@@ -680,8 +686,7 @@ $csrf = $_SESSION['csrf'];
                     <textarea id="editorAudiences2" class="d-none"></textarea>
                     <div id="Audiences2Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSaveAudiences2">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary"
-                            id="btnCancelAudiences2">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelAudiences2">ยกเลิก</button>
                     </div>
                 </article>
 
@@ -692,15 +697,14 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <div id="aud3Content"><?= $AUD_ITEMS['aud3'] ?></div>
+                    <div id="aud3Content"><?php echo $AUD_ITEMS['aud3'] ?></div>
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditAudiences3">แก้ไข</button>
                     </div>
                     <textarea id="editorAudiences3" class="d-none"></textarea>
                     <div id="Audiences3Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSaveAudiences3">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary"
-                            id="btnCancelAudiences3">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelAudiences3">ยกเลิก</button>
                     </div>
                 </article>
 
@@ -711,17 +715,34 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <div id="aud4Content"><?= $AUD_ITEMS['aud4'] ?></div>
+                    <div id="aud4Content"><?php echo $AUD_ITEMS['aud4'] ?></div>
                     <div class="mt-3">
                         <button type="button" class="btn btn-warning" id="btnEditAudiences4">แก้ไข</button>
                     </div>
                     <textarea id="editorAudiences4" class="d-none"></textarea>
                     <div id="Audiences4Actions" class="text-end d-none mt-2">
                         <button type="button" class="btn btn-success" id="btnSaveAudiences4">บันทึก</button>
-                        <button type="button" class="btn btn-outline-secondary"
-                            id="btnCancelAudiences4">ยกเลิก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelAudiences4">ยกเลิก</button>
                     </div>
                 </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <div id="contactContent"><?php echo $CONTACT_HTML ?></div>
+            <div class="mt-3 mb-4">
+                <button type="button" class="btn btn-warning" id="btnEditContact">แก้ไขcontact</button>
+            </div>
+            <textarea id="editorContact" class="d-none"></textarea>
+            <div id="ContactActions" class="text-end d-none mt-2 mb-4">
+                <button type="button" class="btn btn-success" id="btnSaveContact">บันทึกContact</button>
+                <button type="button" class="btn btn-secondary" id="btnCancelContact">ยกเลิกContact</button>
+            </div>
+            <div class="contact-btns">
+                <a class="btn-overwhite" href="#products">ดูรายละเอียดผลิตภัณฑ์</a>
+                <a class="btn-white" href="#">ติดต่อเราเลย</a>
             </div>
         </div>
     </section>
@@ -735,8 +756,8 @@ $csrf = $_SESSION['csrf'];
         <div class="container">
             <div class="row gy-4 align-items-start footer-top">
                 <div class="col-12 col-lg-4 fcol">
-                    <h4 class="mb-3"><?= e($F['name'] ?? 'LUMA AIR') ?></h4>
-                    <p class="mb-0"><?= e($F['title'] ?? '') ?></p>
+                    <h4 class="mb-3"><?php echo e($F['name'] ?? 'LUMA AIR') ?></h4>
+                    <p class="mb-0"><?php echo e($F['title'] ?? '') ?></p>
                 </div>
 
                 <div class="col-12 col-sm-6 col-lg-2 fcol">
@@ -749,7 +770,7 @@ $csrf = $_SESSION['csrf'];
                                         d="M22 16.9v3a2 2 0 0 1-2.2 2 19.2 19.2 0 0 1-8.4-3.2 18.8 18.8 0 0 1-6-6A19.2 19.2 0 0 1 2.1 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.8.6 2.6a2 2 0 0 1-.5 2L8.5 9a16.5 16.5 0 0 0 6 6l.9-1.6a2 2 0 0 1 2-1c.8.2 1.6.4 2.5.6A2 2 0 0 1 22 16.9z" />
                                 </svg>
                             </span>
-                            <span><?= e($F['number1'] ?? '') ?><br><?= e($F['number2'] ?? '') ?></span>
+                            <span><?php echo e($F['number1'] ?? '') ?><br><?php echo e($F['number2'] ?? '') ?></span>
                         </li>
                         <li>
                             <span class="ficon" aria-hidden="true">
@@ -758,7 +779,7 @@ $csrf = $_SESSION['csrf'];
                                         d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm0 0l8 6 8-6" />
                                 </svg>
                             </span>
-                            <span><?= e($F['email'] ?? '') ?></span>
+                            <span><?php echo e($F['email'] ?? '') ?></span>
                         </li>
                     </ul>
                 </div>
@@ -773,7 +794,7 @@ $csrf = $_SESSION['csrf'];
                                     <circle cx="12" cy="10" r="3" />
                                 </svg>
                             </span>
-                            <span><?= nl2br(e($F['address'] ?? '')) ?></span>
+                            <span><?php echo nl2br(e($F['address'] ?? '')) ?></span>
                         </li>
                     </ul>
                 </div>
@@ -788,7 +809,7 @@ $csrf = $_SESSION['csrf'];
                                     <path d="M12 7v5l3 2" />
                                 </svg>
                             </span>
-                            <span><?= e($F['work_time'] ?? '') ?><br><?= e($F['weekend_time'] ?? '') ?></span>
+                            <span><?php echo e($F['work_time'] ?? '') ?><br><?php echo e($F['weekend_time'] ?? '') ?></span>
                         </li>
                     </ul>
                 </div>
@@ -797,7 +818,8 @@ $csrf = $_SESSION['csrf'];
             <hr class="f-divider">
 
             <div class="footer-bottom d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3">
-                <div class="copy">© <?= date('Y') ?> <?= e($F['name'] ?? 'LUMA AIR') ?>. สงวนลิขสิทธิ์ทุกประการ</div>
+                <div class="copy">© <?php echo date('Y') ?> <?php echo e($F['name'] ?? 'LUMA AIR') ?>.
+                    สงวนลิขสิทธิ์ทุกประการ</div>
                 <ul class="f-links list-inline m-0">
                     <li class="list-inline-item"><a href="#">ติดตั้งทั่วประเทศ</a></li>
                     <li class="list-inline-item"><a href="#">รับประกัน 2 ปี</a></li>
@@ -836,12 +858,12 @@ $csrf = $_SESSION['csrf'];
                     </div>
 
                     <!-- ส่ง CSRF ไปกับฟอร์ม -->
-                    <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+                    <input type="hidden" name="csrf" value="<?php echo e($csrf) ?>">
                 </div>
 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">บันทึก</button>
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -869,12 +891,12 @@ $csrf = $_SESSION['csrf'];
                         </div>
                     </div>
                     <input type="hidden" name="which" value="pair1">
-                    <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+                    <input type="hidden" name="csrf" value="<?php echo e($csrf) ?>">
                 </div>
 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">บันทึก</button>
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -902,12 +924,12 @@ $csrf = $_SESSION['csrf'];
                         </div>
                     </div>
                     <input type="hidden" name="which" value="pair2">
-                    <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+                    <input type="hidden" name="csrf" value="<?php echo e($csrf) ?>">
                 </div>
 
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">บันทึก</button>
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
                 </div>
             </form>
         </div>
@@ -919,8 +941,8 @@ $csrf = $_SESSION['csrf'];
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    let BRAND_DB = <?= json_encode($H['name'] ?? 'LUMA AIR') ?>;
-    const CSRF = <?= json_encode($csrf) ?>;
+    let BRAND_DB = <?php echo json_encode($H['name'] ?? 'LUMA AIR') ?>;
+    const CSRF = <?php echo json_encode($csrf) ?>;
 
     // header
     $(document).on('click', '.feature-card summary button', function(e) {
@@ -1046,7 +1068,7 @@ $csrf = $_SESSION['csrf'];
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    csrf: <?= json_encode($csrf) ?>,
+                    csrf: <?php echo json_encode($csrf) ?>,
                     html
                 },
                 success: function(resp) {
@@ -1065,7 +1087,7 @@ $csrf = $_SESSION['csrf'];
     });
 
     // Pic slide
-    const SLIDES = <?= json_encode($P, JSON_UNESCAPED_SLASHES) ?>;
+    const SLIDES = <?php echo json_encode($P, JSON_UNESCAPED_SLASHES) ?>;
 
     $(function() {
         const slideModalEl = document.getElementById('slideModal');
@@ -1201,7 +1223,7 @@ $csrf = $_SESSION['csrf'];
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    csrf: <?= json_encode($csrf) ?>,
+                    csrf: <?php echo json_encode($csrf) ?>,
                     html
                 },
                 success: function(resp) {
@@ -1219,7 +1241,7 @@ $csrf = $_SESSION['csrf'];
         });
     });
 
-    const FEAT_PARTS = <?= json_encode($FEAT_PARTS, JSON_UNESCAPED_UNICODE) ?>;
+    const FEAT_PARTS = <?php echo json_encode($FEAT_PARTS, JSON_UNESCAPED_UNICODE) ?>;
     $(function() {
         function bindPartEditor(cfg) {
             const {
@@ -1441,7 +1463,7 @@ $csrf = $_SESSION['csrf'];
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    csrf: <?= json_encode($csrf) ?>,
+                    csrf: <?php echo json_encode($csrf) ?>,
                     html
                 },
                 success: function(resp) {
@@ -1630,7 +1652,7 @@ $csrf = $_SESSION['csrf'];
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    csrf: <?= json_encode($csrf) ?>,
+                    csrf: <?php echo json_encode($csrf) ?>,
                     key,
                     html
                 },
@@ -1799,7 +1821,7 @@ $csrf = $_SESSION['csrf'];
                 method: 'POST',
                 dataType: 'json',
                 data: {
-                    csrf: <?= json_encode($csrf) ?>,
+                    csrf: <?php echo json_encode($csrf) ?>,
                     key,
                     html
                 },
@@ -1857,6 +1879,66 @@ $csrf = $_SESSION['csrf'];
             actionsSel: '#Audiences4Actions',
             btnSaveSel: '#btnSaveAudiences4',
             btnCancelSel: '#btnCancelAudiences4'
+        });
+    });
+
+
+    // contact
+    $(function() {
+        const $btn = $('#btnEditContact');
+        const $content = $('#contactContent');
+        const $ta = $('#editorContact');
+        const $actions = $('#ContactActions');
+        const $btnSave = $('#btnSaveContact');
+        const $btnCancel = $('#btnCancelContact');
+
+        $ta.addClass('d-none');
+        $actions.addClass('d-none');
+
+        $btn.on('click', function() {
+            $btn.addClass('d-none');
+            initSummernoteOnce($ta, 240);
+            $ta.summernote('code', $content.html().trim());
+
+            $content.addClass('d-none');
+            $ta.removeClass('d-none').next('.note-editor').removeClass('d-none');
+            $actions.removeClass('d-none');
+            $ta.summernote('focus');
+        });
+
+        $btnCancel.on('click', function() {
+            if ($ta.data('sn-inited')) $ta.summernote('code', '');
+            $actions.addClass('d-none');
+            $ta.addClass('d-none').next('.note-editor').addClass('d-none');
+            $content.removeClass('d-none');
+            $btn.removeClass('d-none');
+        });
+
+        $btnSave.on('click', function() {
+            const html = $ta.summernote('code');
+            $.ajax({
+                url: 'save_contact.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    csrf: <?php echo json_encode($csrf) ?>,
+                    html
+                },
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $content.html(resp.html);
+                        $actions.addClass('d-none');
+                        $ta.addClass('d-none').next('.note-editor').addClass('d-none');
+                        $content.removeClass('d-none');
+                        $btn.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
         });
     });
 
