@@ -127,6 +127,15 @@
 <p>ติดต่อทีมงานเพื่อรับคำปรึกษาและใบเสนอราคาฟรี</p>';
     }
 
+    // footer title (HTML ทั้งบล็อก)
+    $FOOTER_TITLE_HTML = '';
+    $resFT = $conn->query("SELECT html FROM site_footer_title WHERE id=1");
+    if ($rowFT = $resFT->fetch_assoc()) { $FOOTER_TITLE_HTML = $rowFT['html']; }
+    if ($FOOTER_TITLE_HTML === '') {
+    $FOOTER_TITLE_HTML = '<h4 class="mb-3">LUMA AIR</h4>
+    <p class="mb-0">ผู้เชี่ยวชาญระบบแลกเปลี่ยนอากาศ เพื่อคุณภาพอากาศที่ดีในบ้าน</p>';
+    }
+
     // CSRF
     if (session_status() === PHP_SESSION_NONE) {session_start();}
     if (empty($_SESSION['csrf'])) {$_SESSION['csrf'] = bin2hex(random_bytes(16));}
@@ -733,12 +742,12 @@
         <div class="container">
             <div id="contactContent"><?php echo $CONTACT_HTML ?></div>
             <div class="mt-3 mb-4">
-                <button type="button" class="btn btn-warning" id="btnEditContact">แก้ไขcontact</button>
+                <button type="button" class="btn btn-warning" id="btnEditContact">แก้ไข</button>
             </div>
             <textarea id="editorContact" class="d-none"></textarea>
             <div id="ContactActions" class="text-end d-none mt-2 mb-4">
-                <button type="button" class="btn btn-success" id="btnSaveContact">บันทึกContact</button>
-                <button type="button" class="btn btn-secondary" id="btnCancelContact">ยกเลิกContact</button>
+                <button type="button" class="btn btn-success" id="btnSaveContact">บันทึก</button>
+                <button type="button" class="btn btn-secondary" id="btnCancelContact">ยกเลิก</button>
             </div>
             <div class="contact-btns">
                 <a class="btn-overwhite" href="#products">ดูรายละเอียดผลิตภัณฑ์</a>
@@ -756,8 +765,16 @@
         <div class="container">
             <div class="row gy-4 align-items-start footer-top">
                 <div class="col-12 col-lg-4 fcol">
-                    <h4 class="mb-3"><?php echo e($F['name'] ?? 'LUMA AIR') ?></h4>
-                    <p class="mb-0"><?php echo e($F['title'] ?? '') ?></p>
+                    <div id="footerTitleContent"><?php echo $FOOTER_TITLE_HTML ?></div>
+                    <div class="mt-3 mb-4">
+                        <button type="button" class="btn btn-warning" id="btnEditFooterTitle">แก้ไขFooterTitle</button>
+                    </div>
+                    <textarea id="editorFooterTitle" class="d-none"></textarea>
+                    <div id="FooterTitleActions" class="text-end d-none mt-2 mb-4">
+                        <button type="button" class="btn btn-success" id="btnSaveFooterTitle">บันทึกFooterTitle</button>
+                        <button type="button" class="btn btn-secondary"
+                            id="btnCancelFooterTitle">ยกเลิกFooterTitle</button>
+                    </div>
                 </div>
 
                 <div class="col-12 col-sm-6 col-lg-2 fcol">
@@ -1922,6 +1939,65 @@
                 dataType: 'json',
                 data: {
                     csrf: <?php echo json_encode($csrf) ?>,
+                    html
+                },
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $content.html(resp.html);
+                        $actions.addClass('d-none');
+                        $ta.addClass('d-none').next('.note-editor').addClass('d-none');
+                        $content.removeClass('d-none');
+                        $btn.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
+
+    // FooterTitle editor
+    $(function() {
+        const $btn = $('#btnEditFooterTitle');
+        const $content = $('#footerTitleContent');
+        const $ta = $('#editorFooterTitle');
+        const $actions = $('#FooterTitleActions');
+        const $btnSave = $('#btnSaveFooterTitle');
+        const $btnCancel = $('#btnCancelFooterTitle');
+
+        $ta.addClass('d-none');
+        $actions.addClass('d-none');
+
+        $btn.on('click', function() {
+            $btn.addClass('d-none');
+            initSummernoteOnce($ta, 180);
+            $ta.summernote('code', $content.html().trim());
+
+            $content.addClass('d-none');
+            $ta.removeClass('d-none').next('.note-editor').removeClass('d-none');
+            $actions.removeClass('d-none');
+            $ta.summernote('focus');
+        });
+
+        $btnCancel.on('click', function() {
+            if ($ta.data('sn-inited')) $ta.summernote('code', '');
+            $actions.addClass('d-none');
+            $ta.addClass('d-none').next('.note-editor').addClass('d-none');
+            $content.removeClass('d-none');
+            $btn.removeClass('d-none');
+        });
+
+        $btnSave.on('click', function() {
+            const html = $ta.summernote('code');
+            $.ajax({
+                url: 'save_footer_title.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    csrf: <?= json_encode($csrf) ?>,
                     html
                 },
                 success: function(resp) {
