@@ -767,13 +767,13 @@
                 <div class="col-12 col-lg-4 fcol">
                     <div id="footerTitleContent"><?php echo $FOOTER_TITLE_HTML ?></div>
                     <div class="mt-3 mb-4">
-                        <button type="button" class="btn btn-warning" id="btnEditFooterTitle">แก้ไขFooterTitle</button>
+                        <button type="button" class="btn btn-warning" id="btnEditFooterTitle">แก้ไข</button>
                     </div>
                     <textarea id="editorFooterTitle" class="d-none"></textarea>
                     <div id="FooterTitleActions" class="text-end d-none mt-2 mb-4">
-                        <button type="button" class="btn btn-success" id="btnSaveFooterTitle">บันทึกFooterTitle</button>
+                        <button type="button" class="btn btn-success" id="btnSaveFooterTitle">บันทึก</button>
                         <button type="button" class="btn btn-secondary"
-                            id="btnCancelFooterTitle">ยกเลิกFooterTitle</button>
+                            id="btnCancelFooterTitle">ยกเลิก</button>
                     </div>
                 </div>
 
