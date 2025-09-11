@@ -104,6 +104,18 @@ if ($AUD_HTML === '') {
   <p class="aud-sub">LUMA AIR ERV สามารถติดตั้งได้กับอาคารและที่พักอาศัยทุกประเภท</p>';
 }
 
+// Audiences 4 ชุด
+$AUD_ITEMS = [
+  'aud1' => '<h3>บ้านเดี่ยว</h3><p>เหมาะสำหรับการติดตั้งในห้องต่างๆ</p>',
+  'aud2' => '<h3>ทาวน์เฮาส์</h3><p>แก้ปัญหาอากาศไม่ถ่ายเทในพื้นที่จำกัด</p>',
+  'aud3' => '<h3>คอนโดมิเนียม</h3><p>เพิ่มคุณภาพอากาศในพื้นที่ขนาดกะทัดรัด</p>',
+  'aud4' => '<h3>อาคารพาณิชย์</h3><p>สร้างสภาพแวดล้อมทำงานที่ดี</p>',
+];
+
+$resAud4 = $conn->query("SELECT `key`, html FROM site_audiences WHERE `key` IN ('aud1','aud2','aud3','aud4')");
+while ($row = $resAud4->fetch_assoc()) {
+  $AUD_ITEMS[$row['key']] = $row['html'];
+}
 
 // CSRF
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
@@ -499,7 +511,7 @@ $csrf = $_SESSION['csrf'];
                 </article>
             </div>
             <div class="text-end mt-4">
-                <button type="button" class="btn btn-warning" id="btnEditProduct">แก้ไข</button>
+                <button type="button" class="btn btn-warning" id="btnEditProduct" disable>แก้ไข</button>
             </div>
         </div>
     </section>
@@ -641,8 +653,16 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <h3>บ้านเดี่ยว</h3>
-                    <p>เหมาะสำหรับการติดตั้งในห้องต่างๆ</p>
+                    <div id="aud1Content"><?= $AUD_ITEMS['aud1'] ?></div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditAudiences1">แก้ไข</button>
+                    </div>
+                    <textarea id="editorAudiences1" class="d-none"></textarea>
+                    <div id="Audiences1Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSaveAudiences1">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelAudiences1">ยกเลิก</button>
+                    </div>
                 </article>
 
                 <article class="aud-card">
@@ -652,8 +672,17 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <h3>ทาวน์เฮาส์</h3>
-                    <p>แก้ปัญหาอากาศไม่ถ่ายเทในพื้นที่จำกัด</p>
+                    <div id="aud2Content"><?= $AUD_ITEMS['aud2'] ?></div>
+
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditAudiences2">แก้ไข</button>
+                    </div>
+                    <textarea id="editorAudiences2" class="d-none"></textarea>
+                    <div id="Audiences2Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSaveAudiences2">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelAudiences2">ยกเลิก</button>
+                    </div>
                 </article>
 
                 <article class="aud-card">
@@ -663,8 +692,16 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <h3>คอนโดมิเนียม</h3>
-                    <p>เพิ่มคุณภาพอากาศในพื้นที่ขนาดกะทัดรัด</p>
+                    <div id="aud3Content"><?= $AUD_ITEMS['aud3'] ?></div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditAudiences3">แก้ไข</button>
+                    </div>
+                    <textarea id="editorAudiences3" class="d-none"></textarea>
+                    <div id="Audiences3Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSaveAudiences3">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelAudiences3">ยกเลิก</button>
+                    </div>
                 </article>
 
                 <article class="aud-card">
@@ -674,8 +711,16 @@ $csrf = $_SESSION['csrf'];
                                 d="M12 20s-6.5-4.4-9-7.9C1 9.6 2.1 6.7 4.9 6 6.7 5.6 8.5 6.4 9.6 7.8 10 8.3 10.5 9 12 10.4 13.5 9 14 8.3 14.4 7.8c1.1-1.4 2.9-2.2 4.7-1.8 2.8.7 3.9 3.6 1.9 6.1C18.5 15.6 12 20 12 20z" />
                         </svg>
                     </div>
-                    <h3>อาคารพาณิชย์</h3>
-                    <p>สร้างสภาพแวดล้อมทำงานที่ดี</p>
+                    <div id="aud4Content"><?= $AUD_ITEMS['aud4'] ?></div>
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-warning" id="btnEditAudiences4">แก้ไข</button>
+                    </div>
+                    <textarea id="editorAudiences4" class="d-none"></textarea>
+                    <div id="Audiences4Actions" class="text-end d-none mt-2">
+                        <button type="button" class="btn btn-success" id="btnSaveAudiences4">บันทึก</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="btnCancelAudiences4">ยกเลิก</button>
+                    </div>
                 </article>
             </div>
         </div>
@@ -1701,6 +1746,117 @@ $csrf = $_SESSION['csrf'];
                     alert('เกิดข้อผิดพลาดในการบันทึก');
                 }
             });
+        });
+    });
+
+    // Audience
+    function bindAudienceEditor(opts) {
+        const {
+            key,
+            displaySel,
+            btnEditSel,
+            editorSel,
+            actionsSel,
+            btnSaveSel,
+            btnCancelSel
+        } = opts;
+
+        const $display = $(displaySel);
+        const $btnEdit = $(btnEditSel);
+        const $editor = $(editorSel);
+        const $actions = $(actionsSel);
+        const $btnSave = $(btnSaveSel);
+        const $btnCancel = $(btnCancelSel);
+
+        $editor.addClass('d-none');
+        $actions.addClass('d-none');
+
+        $btnEdit.on('click', function() {
+            $btnEdit.addClass('d-none');
+            $display.addClass('d-none');
+
+            initSummernoteOnce($editor, 200);
+            $editor.summernote('code', $display.html().trim());
+
+            $editor.removeClass('d-none');
+            $editor.next('.note-editor').removeClass('d-none');
+            $actions.removeClass('d-none');
+            $editor.summernote('focus');
+        });
+
+        $btnCancel.on('click', function() {
+            if ($editor.data('sn-inited')) $editor.summernote('code', '');
+            $editor.addClass('d-none').next('.note-editor').addClass('d-none');
+            $actions.addClass('d-none');
+            $display.removeClass('d-none');
+            $btnEdit.removeClass('d-none');
+        });
+
+        $btnSave.on('click', function() {
+            const html = $editor.summernote('code');
+            $.ajax({
+                url: 'save_audience.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    csrf: <?= json_encode($csrf) ?>,
+                    key,
+                    html
+                },
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $display.html(resp.html);
+                        $editor.addClass('d-none').next('.note-editor').addClass('d-none');
+                        $actions.addClass('d-none');
+                        $display.removeClass('d-none');
+                        $btnEdit.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    }
+
+    $(function() {
+        bindAudienceEditor({
+            key: 'aud1',
+            displaySel: '#aud1Content',
+            btnEditSel: '#btnEditAudiences1',
+            editorSel: '#editorAudiences1',
+            actionsSel: '#Audiences1Actions',
+            btnSaveSel: '#btnSaveAudiences1',
+            btnCancelSel: '#btnCancelAudiences1'
+        });
+        bindAudienceEditor({
+            key: 'aud2',
+            displaySel: '#aud2Content',
+            btnEditSel: '#btnEditAudiences2',
+            editorSel: '#editorAudiences2',
+            actionsSel: '#Audiences2Actions',
+            btnSaveSel: '#btnSaveAudiences2',
+            btnCancelSel: '#btnCancelAudiences2'
+        });
+        bindAudienceEditor({
+            key: 'aud3',
+            displaySel: '#aud3Content',
+            btnEditSel: '#btnEditAudiences3',
+            editorSel: '#editorAudiences3',
+            actionsSel: '#Audiences3Actions',
+            btnSaveSel: '#btnSaveAudiences3',
+            btnCancelSel: '#btnCancelAudiences3'
+        });
+        bindAudienceEditor({
+            key: 'aud4',
+            displaySel: '#aud4Content',
+            btnEditSel: '#btnEditAudiences4',
+            editorSel: '#editorAudiences4',
+            actionsSel: '#Audiences4Actions',
+            btnSaveSel: '#btnSaveAudiences4',
+            btnCancelSel: '#btnCancelAudiences4'
         });
     });
 
