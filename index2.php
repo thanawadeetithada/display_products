@@ -925,7 +925,6 @@
                         <button type="button" class="btn btn-warning" id="btnEditFooterHours">แก้ไข</button>
                     </div>
 
-                    <!-- ฟอร์มแก้ไขเวลาทำการ -->
                     <form id="footerHoursForm" class="d-none">
                         <div class="mb-2">
                             <label class="form-label">หัวข้อ</label>
@@ -2289,7 +2288,6 @@
             $footerHoursText.addClass('d-none');
             $iconHours.addClass('d-none');
 
-            // preload จากค่าที่โชว์อยู่
             $('#fh_title').val($footerHoursTitle.text().trim());
             const plain = $footerHoursText.html().replace(/<br\s*\/?>/gi, '\n').trim();
             $('#fh_hours').val(plain);
@@ -2330,7 +2328,7 @@
                     if (resp && resp.ok) {
                         $footerHoursTitle.text(resp.title).removeClass('d-none');
                         $footerHoursText.html(resp.hours_html).removeClass(
-                        'd-none'); // server แปลง \n -> <br> มาแล้ว
+                        'd-none');
                         $iconHours.removeClass('d-none');
                         $form.addClass('d-none');
                         $btnEdit.removeClass('d-none');
