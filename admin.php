@@ -48,10 +48,10 @@
 
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="index2.php">หน้าหลัก</a></li>
-                    <li class="nav-item"><a class="nav-link" href="article.php">บทความ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="products.php">สินค้า</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.php">ติดต่อเรา</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_home.php">หน้าหลัก</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_article.php">บทความ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_products.php">สินค้า</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_contact.php">ติดต่อเรา</a></li>
                 </ul>
             </div>
         </div>

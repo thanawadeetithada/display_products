@@ -151,6 +151,10 @@ $stmt->close();
         }
     }
 
+    #editBar .btn {
+        min-width: 100px
+    }
+
     .rounded {
         border-radius: 30px !important;
     }
@@ -160,19 +164,17 @@ $stmt->close();
 <body>
     <nav class="navbar navbar-expand-lg border-bottom sticky-top">
         <div class="container">
-            <div>
-                <a class="navbar-brand" id="brandLink" href="index2.php"><?php echo $H['name'] ?? 'LUMA AIR' ?></a>
+            <div><a class="navbar-brand" id="brandLink" href="index2.php"><?php echo $H['name'] ?? 'LUMA AIR' ?></a>
             </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-                aria-controls="mainNavbar" aria-expanded="false" aria-label="สลับเมนู">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                aria-controls="mainNavbar" aria-expanded="false" aria-label="สลับเมนู"><span
+                    class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="index.php">หน้าหลัก</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="article.php">บทความ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="products.php">สินค้า</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.php">ติดต่อเรา</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_home.php">หน้าหลัก</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_article.php">บทความ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_products.php">สินค้า</a></li>
+                    <li class="nav-item"><a class="nav-link" href="admin_contact.php">ติดต่อเรา</a></li>
                 </ul>
             </div>
         </div>
@@ -183,6 +185,11 @@ $stmt->close();
             <?php echo $article['html'];?>
         </div>
         <textarea id="editorBody" class="mt-3 d-none"></textarea>
+        <div id="editBar" class="d-flex gap-2 mt-3 justify-content-end">
+            <button id="btnEdit" class="btn btn-warning">แก้ไข</button>
+            <button id="btnSave" class="btn btn-success d-none">บันทึก</button>
+            <button id="btnCancel" class="btn btn-outline-secondary d-none">ยกเลิก</button>
+        </div>
     </div>
 
     <!-- Footer -->
@@ -202,9 +209,8 @@ $stmt->close();
                                         d="M22 16.9v3a2 2 0 0 1-2.2 2 19.2 19.2 0 0 1-8.4-3.2 18.8 18.8 0 0 1-6-6A19.2 19.2 0 0 1 2.1 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.8.6 2.6a2 2 0 0 1-.5 2L8.5 9a16.5 16.5 0 0 0 6 6l.9-1.6a2 2 0 0 1 2-1c.8.2 1.6.4 2.5.6A2 2 0 0 1 22 16.9z" />
                                 </svg>
                             </span>
-                            <span id="footerPhones">
-                                <?php echo e($F['number1']) ?><br><?php echo e($F['number2']) ?>
-                            </span>
+                            <span
+                                id="footerPhones"><?php echo e($F['number1']) ?><br><?php echo e($F['number2']) ?></span>
                         </li>
                         <li>
                             <span class="ficon" aria-hidden="true" id="iconEmail">
@@ -264,6 +270,90 @@ $stmt->close();
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script>
+    $(function() {
+        const ARTICLE_ID = <?php echo (int)$article['id']; ?>;
+        const CSRF_TOKEN = <?php echo json_encode($csrf, JSON_UNESCAPED_UNICODE); ?>;
+        let snapshotHtml = <?php echo json_encode($article['html'] ?? '', JSON_UNESCAPED_UNICODE); ?>;
+
+        function initEditor(html) {
+            $('#editorBody')
+                .removeClass('d-none')
+                .summernote({
+                    height: 700,
+                    focus: true,
+                    placeholder: 'พิมพ์ข้อความที่นี่…',
+                    dialogsInBody: true,
+                    toolbar: [
+                        ['style', ['style']],
+                        ['font', ['bold', 'italic', 'underline', 'clear']],
+                        ['fontname', ['fontname']],
+                        ['fontsize', ['fontsize']],
+                        ['color', ['color']],
+                        ['para', ['ul', 'ol', 'paragraph']],
+                        ['insert', ['picture']],
+                    ],
+                    fontNames: ['Prompt', 'TH Sarabun New', 'Arial', 'Tahoma', 'Times New Roman',
+                        'Courier New', 'Helvetica'
+                    ],
+                    fontNamesIgnoreCheck: ['Prompt', 'TH Sarabun New'],
+                    fontSizes: ['10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48']
+                })
+                .summernote('code', html || '');
+        }
+
+        function destroyEditor() {
+            if ($('#editorBody').next('.note-editor').length) {
+                $('#editorBody').summernote('destroy');
+            }
+            $('#editorBody').addClass('d-none');
+        }
+
+        $('#btnEdit').on('click', function() {
+            $('#btnEdit').addClass('d-none');
+            $('#btnSave, #btnCancel').removeClass('d-none');
+            $('#articleView').addClass('d-none');
+            initEditor(snapshotHtml);
+        });
+
+        $('#btnCancel').on('click', function() {
+            destroyEditor();
+            $('#btnSave, #btnCancel').addClass('d-none');
+            $('#btnEdit').removeClass('d-none');
+            $('#articleView').html(snapshotHtml).removeClass('d-none');
+        });
+
+        $('#btnSave').on('click', function() {
+            const html = $('#editorBody').summernote('code');
+            $('#btnSave').prop('disabled', true).text('กำลังบันทึก...');
+
+            $.post('admin_article.php?id=' + ARTICLE_ID, {
+                    action: 'save',
+                    id: ARTICLE_ID,
+                    html: html,
+                    csrf: CSRF_TOKEN
+                }, function(resp) {
+                    if (resp && resp.ok) {
+                        snapshotHtml = html;
+                        $('#articleView').html(snapshotHtml);
+                        destroyEditor();
+                        $('#btnSave, #btnCancel').addClass('d-none');
+                        $('#btnEdit').removeClass('d-none');
+                        $('#articleView').removeClass('d-none');
+                    } else {
+                        alert(resp && resp.msg ? resp.msg : 'บันทึกไม่สำเร็จ');
+                    }
+                }, 'json')
+                .fail(function() {
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+                })
+                .always(function() {
+                    $('#btnSave').prop('disabled', false).text('บันทึก');
+                });
+        });
+        $('.note-editor').addClass('d-none');
+    });
+    </script>
 </body>
 
 </html>

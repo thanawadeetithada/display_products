@@ -216,7 +216,9 @@
 
     }
 
-    .navbar-nav .nav-link:hover {
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active,
+    .navbar-expand-lg .navbar-nav .nav-link.active {
         background: #eaf6fb;
         color: var(--primary);
     }
@@ -284,7 +286,7 @@
 
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="index2.php">หน้าหลัก</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="index.php">หน้าหลัก</a></li>
                     <li class="nav-item"><a class="nav-link" href="article.php">บทความ</a></li>
                     <li class="nav-item"><a class="nav-link" href="products.php">สินค้า</a></li>
                     <li class="nav-item"><a class="nav-link" href="contact.php">ติดต่อเรา</a></li>
@@ -681,7 +683,7 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-   
+
 </body>
 
 </html>
