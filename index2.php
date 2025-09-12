@@ -157,6 +157,18 @@
         }
     }
 
+    // footer hours
+    $HOURS = [
+        'title' => 'เวลาทำการ',
+        'hours' => "จันทร์–ศุกร์: 9:00–18:00\nเสาร์–อาทิตย์: 10:00–16:00",
+    ];
+    $resHours = $conn->query("SELECT title, hours FROM site_footer_hours WHERE id=1");
+    if ($row = $resHours->fetch_assoc()) {
+        foreach (['title','hours'] as $k) {
+            if (isset($row[$k]) && $row[$k] !== '') $HOURS[$k] = $row[$k];
+        }
+    }
+
     // CSRF
     if (session_status() === PHP_SESSION_NONE) {session_start();}
     if (empty($_SESSION['csrf'])) {$_SESSION['csrf'] = bin2hex(random_bytes(16));}
@@ -896,19 +908,45 @@
                 </div>
 
                 <div class="col-12 col-lg-3 fcol">
-                    <h4 class="mb-3">เวลาทำการ</h4>
+                    <h4 class="mb-3" id="footerHoursTitle"><?php echo e($HOURS['title']) ?></h4>
                     <ul class="f-list">
                         <li>
-                            <span class="ficon" aria-hidden="true">
+                            <span class="ficon" aria-hidden="true" id="iconHours">
                                 <svg viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="9" />
                                     <path d="M12 7v5l3 2" />
                                 </svg>
                             </span>
-                            <span>จันทร์–ศุกร์: 9:00–18:00<br>เสาร์–อาทิตย์: 10:00–16:00</span>
+                            <span id="footerHoursText"><?php echo nl2br(e($HOURS['hours'])) ?></span>
                         </li>
                     </ul>
+
+                    <div class="mt-3 mb-2">
+                        <button type="button" class="btn btn-warning" id="btnEditFooterHours">แก้ไข</button>
+                    </div>
+
+                    <!-- ฟอร์มแก้ไขเวลาทำการ -->
+                    <form id="footerHoursForm" class="d-none">
+                        <div class="mb-2">
+                            <label class="form-label">หัวข้อ</label>
+                            <input type="text" class="form-control" id="fh_title"
+                                value="<?php echo e($HOURS['title']) ?>">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">เวลาทำการ (หลายบรรทัด)</label>
+                            <textarea class="form-control" id="fh_hours"
+                                rows="4"><?php echo e($HOURS['hours']) ?></textarea>
+                        </div>
+
+                        <input type="hidden" id="fh_csrf" value="<?php echo e($csrf) ?>">
+
+                        <div class="text-end gap-2 d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-success" id="btnSaveFooterHours">บันทึก</button>
+                            <button type="button" class="btn btn-secondary" id="btnCancelFooterHours">ยกเลิก</button>
+                        </div>
+                    </form>
                 </div>
+
             </div>
 
             <hr class="f-divider">
@@ -2221,6 +2259,79 @@
                         $footerAddrText.html(resp.address_html).removeClass(
                             'd-none');
                         $iconAddr.removeClass('d-none');
+                        $form.addClass('d-none');
+                        $btnEdit.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
+
+    //   footer hours
+    $(function() {
+        const $btnEdit = $('#btnEditFooterHours');
+        const $form = $('#footerHoursForm');
+        const $btnSave = $('#btnSaveFooterHours');
+        const $btnCancel = $('#btnCancelFooterHours');
+
+        const $footerHoursTitle = $('#footerHoursTitle');
+        const $footerHoursText = $('#footerHoursText');
+        const $iconHours = $('#iconHours');
+
+        function showForm() {
+            $btnEdit.addClass('d-none');
+            $footerHoursTitle.addClass('d-none');
+            $footerHoursText.addClass('d-none');
+            $iconHours.addClass('d-none');
+
+            // preload จากค่าที่โชว์อยู่
+            $('#fh_title').val($footerHoursTitle.text().trim());
+            const plain = $footerHoursText.html().replace(/<br\s*\/?>/gi, '\n').trim();
+            $('#fh_hours').val(plain);
+
+            $form.removeClass('d-none');
+        }
+
+        function hideForm(reset = false) {
+            if (reset) {
+                $('#fh_title').val('');
+                $('#fh_hours').val('');
+            }
+            $form.addClass('d-none');
+            $btnEdit.removeClass('d-none');
+            $footerHoursTitle.removeClass('d-none');
+            $footerHoursText.removeClass('d-none');
+            $iconHours.removeClass('d-none');
+        }
+
+        $btnEdit.on('click', showForm);
+        $btnCancel.on('click', function() {
+            hideForm(true);
+        });
+
+        $btnSave.on('click', function() {
+            const payload = {
+                csrf: $('#fh_csrf').val(),
+                title: $('#fh_title').val().trim(),
+                hours: $('#fh_hours').val().trim(),
+            };
+
+            $.ajax({
+                url: 'save_footer_hours.php',
+                method: 'POST',
+                dataType: 'json',
+                data: payload,
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $footerHoursTitle.text(resp.title).removeClass('d-none');
+                        $footerHoursText.html(resp.hours_html).removeClass(
+                        'd-none'); // server แปลง \n -> <br> มาแล้ว
+                        $iconHours.removeClass('d-none');
                         $form.addClass('d-none');
                         $btnEdit.removeClass('d-none');
                     } else {
