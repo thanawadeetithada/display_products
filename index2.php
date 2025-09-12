@@ -169,6 +169,20 @@
         }
     }
 
+    // footer bottom
+    $FBOT = [
+        'copy_text' => '© '.date('Y').' '.($F['name'] ?? 'LUMA AIR').'. สงวนลิขสิทธิ์ทุกประการ',
+        'link1'     => 'ติดตั้งทั่วประเทศ',
+        'link2'     => 'รับประกัน 2 ปี',
+        'link3'     => 'บริการหลังการขาย',
+    ];
+    $resFbot = $conn->query("SELECT copy_text, link1, link2, link3 FROM site_footer_bottom WHERE id=1");
+    if ($row = $resFbot->fetch_assoc()) {
+        foreach (['copy_text','link1','link2','link3'] as $k) {
+            if (!empty($row[$k])) $FBOT[$k] = $row[$k];
+        }
+    }
+
     // CSRF
     if (session_status() === PHP_SESSION_NONE) {session_start();}
     if (empty($_SESSION['csrf'])) {$_SESSION['csrf'] = bin2hex(random_bytes(16));}
@@ -951,13 +965,49 @@
             <hr class="f-divider">
 
             <div class="footer-bottom d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3">
-                <div class="copy">© <?php echo date('Y') ?> <?php echo e($F['name'] ?? 'LUMA AIR') ?>.
-                    สงวนลิขสิทธิ์ทุกประการ</div>
-                <ul class="f-links list-inline m-0">
-                    <li class="list-inline-item"><a href="#">ติดตั้งทั่วประเทศ</a></li>
-                    <li class="list-inline-item"><a href="#">รับประกัน 2 ปี</a></li>
-                    <li class="list-inline-item"><a href="#">บริการหลังการขาย</a></li>
+                <div class="copy" id="footerCopy"><?php echo e($FBOT['copy_text']) ?></div>
+
+                <ul class="f-links list-inline m-0" id="footerLinks">
+                    <li class="list-inline-item"><a href="#"><?php echo e($FBOT['link1']) ?></a></li>
+                    <li class="list-inline-item"><a href="#"><?php echo e($FBOT['link2']) ?></a></li>
+                    <li class="list-inline-item"><a href="#"><?php echo e($FBOT['link3']) ?></a></li>
                 </ul>
+
+                <div class="mt-2">
+                    <button type="button" class="btn btn-warning" id="btnEditFooterBottom">แก้ไข</button>
+                </div>
+
+                <form id="footerBottomForm" class="d-none w-100 mt-2">
+                    <div class="mb-2">
+                        <label class="form-label">ข้อความลิขสิทธิ์</label>
+                        <input type="text" class="form-control" id="fb_copy"
+                            value="<?php echo e($FBOT['copy_text']) ?>">
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-4 mb-2">
+                            <label class="form-label">ข้อความ</label>
+                            <input type="text" class="form-control" id="fb_link1"
+                                value="<?php echo e($FBOT['link1']) ?>">
+                        </div>
+                        <div class="col-12 col-md-4 mb-2">
+                            <label class="form-label">ข้อความ</label>
+                            <input type="text" class="form-control" id="fb_link2"
+                                value="<?php echo e($FBOT['link2']) ?>">
+                        </div>
+                        <div class="col-12 col-md-4 mb-2">
+                            <label class="form-label">ข้อความ</label>
+                            <input type="text" class="form-control" id="fb_link3"
+                                value="<?php echo e($FBOT['link3']) ?>">
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="fb_csrf" value="<?php echo e($csrf) ?>">
+
+                    <div class="text-end gap-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-success" id="btnSaveFooterBottom">บันทึก</button>
+                        <button type="button" class="btn btn-secondary" id="btnCancelFooterBottom">ยกเลิก</button>
+                    </div>
+                </form>
             </div>
         </div>
     </footer>
@@ -2328,10 +2378,79 @@
                     if (resp && resp.ok) {
                         $footerHoursTitle.text(resp.title).removeClass('d-none');
                         $footerHoursText.html(resp.hours_html).removeClass(
-                        'd-none');
+                            'd-none');
                         $iconHours.removeClass('d-none');
                         $form.addClass('d-none');
                         $btnEdit.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
+
+    // footer bottom
+    $(function() {
+        const $btnEdit = $('#btnEditFooterBottom');
+        const $form = $('#footerBottomForm');
+        const $btnSave = $('#btnSaveFooterBottom');
+        const $btnCancel = $('#btnCancelFooterBottom');
+
+        const $copy = $('#footerCopy');
+        const $links = $('#footerLinks');
+
+        function showForm() {
+            $btnEdit.addClass('d-none');
+            $copy.addClass('d-none');
+            $links.addClass('d-none');
+
+            $('#fb_copy').val($copy.text().trim());
+            $('#fb_link1').val($links.find('li:eq(0) a').text().trim());
+            $('#fb_link2').val($links.find('li:eq(1) a').text().trim());
+            $('#fb_link3').val($links.find('li:eq(2) a').text().trim());
+
+            $form.removeClass('d-none');
+        }
+
+        function hideForm(reset = false) {
+            if (reset) {
+                $('#fb_copy, #fb_link1, #fb_link2, #fb_link3').val('');
+            }
+            $form.addClass('d-none');
+            $btnEdit.removeClass('d-none');
+            $copy.removeClass('d-none');
+            $links.removeClass('d-none');
+        }
+
+        $btnEdit.on('click', showForm);
+        $btnCancel.on('click', () => hideForm(true));
+
+        $btnSave.on('click', function() {
+            const payload = {
+                csrf: $('#fb_csrf').val(),
+                copy_text: $('#fb_copy').val().trim(),
+                link1: $('#fb_link1').val().trim(),
+                link2: $('#fb_link2').val().trim(),
+                link3: $('#fb_link3').val().trim()
+            };
+
+            $.ajax({
+                url: 'save_footer_bottom.php',
+                method: 'POST',
+                dataType: 'json',
+                data: payload,
+                success: function(resp) {
+                    if (resp.ok) {
+                        $copy.text(resp.copy_text);
+                        $links.find('li:eq(0) a').text(resp.link1);
+                        $links.find('li:eq(1) a').text(resp.link2);
+                        $links.find('li:eq(2) a').text(resp.link3);
+
+                        hideForm();
                     } else {
                         alert(resp.error || 'บันทึกไม่สำเร็จ');
                     }
