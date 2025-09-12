@@ -145,6 +145,18 @@
       }
     }
 
+    // footer address
+    $ADDR = [
+    'title'   => 'ที่อยู่',
+    'address' => "123 ถนนสุขุมวิท แขวงคลองเคย\nเขตคลองเคย กรุงเทพมหานคร 10110",
+    ];
+    $resAddr = $conn->query("SELECT title, address FROM site_footer_address WHERE id=1");
+    if ($row = $resAddr->fetch_assoc()) {
+        foreach (['title','address'] as $k) {
+        if (isset($row[$k]) && $row[$k] !== '') $ADDR[$k] = $row[$k];
+        }
+    }
+
     // CSRF
     if (session_status() === PHP_SESSION_NONE) {session_start();}
     if (empty($_SESSION['csrf'])) {$_SESSION['csrf'] = bin2hex(random_bytes(16));}
@@ -814,7 +826,7 @@
 
                     <div class="mt-3 mb-2">
                         <button type="button" class="btn btn-warning" id="btnEditFooterContact">แก้ไข
-                            </button>
+                        </button>
                     </div>
                     <form id="footerContactForm" class="d-none">
                         <div class="mb-2">
@@ -844,19 +856,43 @@
                 </div>
 
                 <div class="col-12 col-sm-6 col-lg-3 fcol">
-                    <h4 class="mb-3">ที่อยู่</h4>
+                    <h4 class="mb-3" id="footerAddrTitle"><?php echo e($ADDR['title']) ?></h4>
+
                     <ul class="f-list">
                         <li>
-                            <span class="ficon" aria-hidden="true">
+                            <span class="ficon" aria-hidden="true" id="iconAddr">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M12 22s7-7.1 7-12a7 7 0 1 0-14 0c0 4.9 7 12 7 12z" />
                                     <circle cx="12" cy="10" r="3" />
                                 </svg>
                             </span>
-                            <span>123 ถนนสุขุมวิท แขวงคลองเคย
-                                เขตคลองเคย กรุงเทพมหานคร 10110</span>
+                            <span id="footerAddrText"><?php echo nl2br(e($ADDR['address'])) ?></span>
                         </li>
                     </ul>
+
+                    <div class="mt-3 mb-2">
+                        <button type="button" class="btn btn-warning" id="btnEditFooterAddr">แก้ไข</button>
+                    </div>
+
+                    <form id="footerAddrForm" class="d-none">
+                        <div class="mb-2">
+                            <label class="form-label">หัวข้อ</label>
+                            <input type="text" class="form-control" id="fa_title"
+                                value="<?php echo e($ADDR['title']) ?>">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">ที่อยู่ (หลายบรรทัด)</label>
+                            <textarea class="form-control" id="fa_address"
+                                rows="4"><?php echo e($ADDR['address']) ?></textarea>
+                        </div>
+
+                        <input type="hidden" id="fa_csrf" value="<?php echo e($csrf) ?>">
+
+                        <div class="text-end gap-2 d-flex justify-content-end mt-2">
+                            <button type="button" class="btn btn-success" id="btnSaveFooterAddr">บันทึก</button>
+                            <button type="button" class="btn btn-secondary" id="btnCancelFooterAddr">ยกเลิก</button>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="col-12 col-lg-3 fcol">
@@ -2114,6 +2150,79 @@
                         $btnEdit.removeClass('d-none');
                         $iconContact.removeClass('d-none');
                         $iconEmail.removeClass('d-none');
+                    } else {
+                        alert(resp.error || 'บันทึกไม่สำเร็จ');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการบันทึก');
+                }
+            });
+        });
+    });
+
+    //   footer address
+    $(function() {
+        const $btnEdit = $('#btnEditFooterAddr');
+        const $form = $('#footerAddrForm');
+        const $btnSave = $('#btnSaveFooterAddr');
+        const $btnCancel = $('#btnCancelFooterAddr');
+
+        const $footerAddrTitle = $('#footerAddrTitle');
+        const $footerAddrText = $('#footerAddrText');
+        const $iconAddr = $('#iconAddr');
+
+        function showForm() {
+            $btnEdit.addClass('d-none');
+            $footerAddrTitle.addClass('d-none');
+            $footerAddrText.addClass('d-none');
+            $iconAddr.addClass('d-none');
+
+            $('#fa_title').val($footerAddrTitle.text().trim());
+            const plainAddr = $footerAddrText.html().replace(/<br\s*\/?>/gi, '\n').trim();
+            $('#fa_address').val(plainAddr);
+
+            $form.removeClass('d-none');
+        }
+
+        function hideForm(resetFields = false) {
+            if (resetFields) {
+                $('#fa_title').val('');
+                $('#fa_address').val('');
+            }
+            $form.addClass('d-none');
+            $btnEdit.removeClass('d-none');
+            $footerAddrTitle.removeClass('d-none');
+            $footerAddrText.removeClass('d-none');
+            $iconAddr.removeClass('d-none');
+        }
+
+        $btnEdit.on('click', showForm);
+
+        $btnCancel.on('click', function() {
+            hideForm(true);
+        });
+
+        $btnSave.on('click', function() {
+            const payload = {
+                csrf: $('#fa_csrf').val(),
+                title: $('#fa_title').val().trim(),
+                address: $('#fa_address').val().trim()
+            };
+
+            $.ajax({
+                url: 'save_footer_address.php',
+                method: 'POST',
+                dataType: 'json',
+                data: payload,
+                success: function(resp) {
+                    if (resp && resp.ok) {
+                        $footerAddrTitle.text(resp.title).removeClass('d-none');
+                        $footerAddrText.html(resp.address_html).removeClass(
+                            'd-none');
+                        $iconAddr.removeClass('d-none');
+                        $form.addClass('d-none');
+                        $btnEdit.removeClass('d-none');
                     } else {
                         alert(resp.error || 'บันทึกไม่สำเร็จ');
                     }
