@@ -574,7 +574,7 @@
                 </article>
             </div>
             <div class="text-end mt-4">
-                <button type="button" class="btn btn-warning" id="btnEditProduct" disable>แก้ไข</button>
+                <button type="button" class="btn btn-warning" id="btnEditProduct">แก้ไข</button>
             </div>
         </div>
     </section>
@@ -2456,6 +2456,10 @@
                 }
             });
         });
+    });
+
+    document.getElementById('btnEditProduct').addEventListener('click', function() {
+        window.location.href = 'edit_product.php';
     });
     </script>
 </body>
